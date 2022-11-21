@@ -2,6 +2,7 @@ import numpy as np
 import os
 
 from .fortran_daily import regionalised_daily
+from .get_fortran_data import copy_fortran_data
 from .convert_daily_to_NetCDF import convertdailync
 
 def regionaliseddailysim(nyears, startyear, nsim,
@@ -37,6 +38,8 @@ def regionaliseddailysim(nyears, startyear, nsim,
     dcoast = str(targetdcoast) + ' '
     anrf = str(targetanrf) + ' '
 
+    copy_fortran_data()
+    
     # Write paramters into data_r file
     with open("data_r.dat",'r') as file:
         data_r = file.readlines()

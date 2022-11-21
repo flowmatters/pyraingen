@@ -68,10 +68,10 @@ def convertdailync(fnameSRC, fnameTRG, yearStart, nYears, nSims, missingDay = -9
     dayVector = np.arange(0,nDays,1)
     dayVector = dayVector + datevecToJD(date(int(yearStart), 1, 1))
 
-    dailyData = np.ones((nDays, nSims)) * missingDay
+    dailyData = np.ones((nDays, int(nSims))) * missingDay
 
     with open(fnameSRC) as f:
-        for loopReadSims in range(nSims):
+        for loopReadSims in range(int(nSims)):
             print(f'Reading Simulation: {loopReadSims}')
             for loopReadRain in range(nDays):
                 buffer = f.readline().rstrip()
