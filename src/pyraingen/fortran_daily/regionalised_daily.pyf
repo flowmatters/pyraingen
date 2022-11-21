@@ -1,0 +1,1309 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module regionalised_daily ! in 
+    interface  ! in :regionalised_daily
+        subroutine regionalised_daily(idrop) ! in :regionalised_daily:regionalised_daily.for
+            integer :: idrop
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+        end subroutine regionalised_daily
+        subroutine day(nday,monmax) ! in :regionalised_daily:regionalised_daily.for
+            integer dimension(monmax) :: nday
+            integer, optional,check(shape(nday, 0) == monmax),depend(nday) :: monmax=shape(nday, 0)
+        end subroutine day
+        subroutine daycount(ns,i,id) ! in :regionalised_daily:regionalised_daily.for
+            integer :: ns
+            integer :: i
+            integer :: id
+        end subroutine daycount
+        subroutine day_neg(i,j,l,ip,nout,ns,lag,nday,monmax,ind) ! in :regionalised_daily:regionalised_daily.for
+            integer :: i
+            integer :: j
+            integer :: l
+            integer :: ip
+            integer :: nout
+            integer :: ns
+            integer :: lag
+            integer dimension(monmax) :: nday
+            integer, optional,check(shape(nday, 0) == monmax),depend(nday) :: monmax=shape(nday, 0)
+            integer :: ind
+        end subroutine day_neg
+        subroutine day_pos(i,j,l,nout,ns,nday,ny,monmax,ind) ! in :regionalised_daily:regionalised_daily.for
+            integer :: i
+            integer :: j
+            integer :: l
+            integer :: nout
+            integer :: ns
+            integer dimension(monmax) :: nday
+            integer :: ny
+            integer, optional,check(shape(nday, 0) == monmax),depend(nday) :: monmax=shape(nday, 0)
+            integer :: ind
+        end subroutine day_pos
+        subroutine station(kk,idr,tlat,tlon,tele,tdcoast,tanrf,idx,w,nstn,nsmax,nstnmax) ! in :regionalised_daily:regionalised_daily.for
+            integer :: kk
+            integer dimension(nsmax) :: idr
+            real :: tlat
+            real :: tlon
+            real :: tele
+            real :: tdcoast
+            real :: tanrf
+            integer dimension(nstnmax) :: idx
+            real*4 dimension(nstnmax),depend(nstnmax) :: w
+            integer :: nstn
+            integer, optional,check(shape(idr, 0) == nsmax),depend(idr) :: nsmax=shape(idr, 0)
+            integer, optional,check(shape(idx, 0) == nstnmax),depend(idx) :: nstnmax=shape(idx, 0)
+        end subroutine station
+        subroutine ranks(x,ix,n,nmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax) :: x
+            integer dimension(nmax),depend(nmax) :: ix
+            integer :: n
+            integer, optional,check(shape(x, 0) == nmax),depend(x) :: nmax=shape(x, 0)
+        end subroutine ranks
+        subroutine readdata(fpath,jj,idx,nyear,nstart,avr) ! in :regionalised_daily:regionalised_daily.for
+            character*80 :: fpath
+            integer :: jj
+            integer :: idx
+            integer :: nyear
+            integer :: nstart
+            real :: avr
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            real*4 dimension(12,31) :: pro1
+            real*4 dimension(12,31) :: pro2
+            real*4 dimension(12,31) :: pro3
+            real*4 dimension(12,31) :: pro4
+            real*4 dimension(12,31) :: pro
+            real*4 dimension(12,31,5) :: pp1av
+            real*4 dimension(12,31,5) :: pp2av
+            real*4 dimension(12,31,5) :: pp3av
+            real*4 dimension(12,31,5) :: pp4av
+            real*4 dimension(12,31,5,5) :: pp1cov
+            real*4 dimension(12,31,5,5) :: pp2cov
+            real*4 dimension(12,31,5,5) :: pp3cov
+            real*4 dimension(12,31,5,5) :: pp4cov
+            real*4 dimension(12,31,5) :: p1av
+            real*4 dimension(12,31,5) :: p2av
+            real*4 dimension(12,31,5) :: p3av
+            real*4 dimension(12,31,5) :: p4av
+            real*4 dimension(12,31) :: pprev1
+            real*4 dimension(12,31) :: pprev2
+            real*4 dimension(12,31) :: pprev3
+            real*4 dimension(12,31) :: pprev4
+            real*4 dimension(12,31) :: prev1
+            real*4 dimension(12,31) :: prev2
+            real*4 dimension(12,31) :: prev3
+            real*4 dimension(12,31) :: prev4
+            real*4 dimension(6) :: acl
+            real*4 dimension(12,31,5,5) :: p1cov
+            real*4 dimension(12,31,5,5) :: p2cov
+            real*4 dimension(12,31,5,5) :: p3cov
+            real*4 dimension(12,31,5,5) :: p4cov
+            real*4 dimension(5,12,31) :: almr
+            real*4 dimension(12,31,5) :: pp1lav
+            real*4 dimension(12,31,5) :: pp2lav
+            real*4 dimension(12,31,5) :: pp3lav
+            real*4 dimension(12,31,5) :: pp4lav
+            real*4 dimension(12,31,5,5) :: pp1lcov
+            real*4 dimension(12,31,5,5) :: pp2lcov
+            real*4 dimension(12,31,5,5) :: pp3lcov
+            real*4 dimension(12,31,5,5) :: pp4lcov
+            real*4 dimension(12,31,5) :: p1lav
+            real*4 dimension(12,31,5) :: p2lav
+            real*4 dimension(12,31,5) :: p3lav
+            real*4 dimension(12,31,5) :: p4lav
+            real*4 dimension(12,31,5,5) :: p1lcov
+            real*4 dimension(12,31,5,5) :: p2lcov
+            real*4 dimension(12,31,5,5) :: p3lcov
+            real*4 dimension(12,31,5,5) :: p4lcov
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+            common /occ_cor1/ pro1,pro2,pro3,pro4,pro
+            common /p30_avsd/ pp1av,pp2av,pp3av,pp4av,pp1cov,pp2cov,pp3cov,pp4cov,p1av,p2av,p3av,p4av,pprev1,pprev2,pprev3,pprev4,prev1,prev2,prev3,prev4,acl,p1cov,p2cov,p3cov,p4cov,almr,pp1lav,pp2lav,pp3lav,pp4lav,pp1lcov,pp2lcov,pp3lcov,pp4lcov,p1lav,p2lav,p3lav,p4lav,p1lcov,p2lcov,p3lcov,p4lcov
+        end subroutine readdata
+        subroutine smoothprob ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            real*4 dimension(12,31,6,6) :: covar
+            real*4 dimension(12,31,6) :: pro1
+            real*4 dimension(12,31,6) :: pro2
+            real*4 dimension(12,31,6) :: pro
+            real*4 dimension(30,200,12,31) :: high
+            real*4 dimension(5,12,31,6) :: avl
+            real*4 dimension(5,12,31,6) :: sdl
+            real*4 dimension(6200,12,31,6) :: rfcur
+            real*4 dimension(6200,12,31,6) :: rfprv
+            real*4 dimension(6,12,31,5) :: stnwt1
+            real*4 dimension(6,12,31,5) :: stnwt2
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+            common /occ_cor/ covar,pro1,pro2,pro,high,avl,sdl
+            common /rfamount/ rfcur,rfprv,stnwt1,stnwt2
+        end subroutine smoothprob
+        subroutine prob1(xc,xp1,nstn,kp,rain,prow,nearmax,nstnmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nearmax,nstnmax) :: xc
+            real*4 dimension(nearmax,nstnmax),depend(nstnmax,nearmax) :: xp1
+            integer :: nstn
+            integer dimension(nstnmax),depend(nstnmax) :: kp
+            real*4 :: rain
+            real*4 dimension(5,nstnmax),depend(nstnmax) :: prow
+            integer, optional,check(shape(xc, 0) == nearmax),depend(xc) :: nearmax=shape(xc, 0)
+            integer, optional,check(shape(xc, 1) == nstnmax),depend(xc) :: nstnmax=shape(xc, 1)
+        end subroutine prob1
+        subroutine long_store ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            real*4 dimension(12,31,6,6) :: covar
+            real*4 dimension(12,31,6) :: pro1
+            real*4 dimension(12,31,6) :: pro2
+            real*4 dimension(12,31,6) :: pro
+            real*4 dimension(30,200,12,31) :: high
+            real*4 dimension(5,12,31,6) :: avl
+            real*4 dimension(5,12,31,6) :: sdl
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+            common /occ_cor/ covar,pro1,pro2,pro,high,avl,sdl
+        end subroutine long_store
+        subroutine prevdays(i1,j1,l1,long1,long2,sum,ind,nk,ns) ! in :regionalised_daily:regionalised_daily.for
+            integer :: i1
+            integer :: j1
+            integer :: l1
+            integer :: long1
+            integer :: long2
+            real*4 :: sum
+            integer :: ind
+            integer :: nk
+            integer :: ns
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+        end subroutine prevdays
+        subroutine av_sd_lon ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            real*4 dimension(12,31,6,6) :: covar
+            real*4 dimension(12,31,6) :: pro1
+            real*4 dimension(12,31,6) :: pro2
+            real*4 dimension(12,31,6) :: pro
+            real*4 dimension(30,200,12,31) :: high
+            real*4 dimension(5,12,31,6) :: avl
+            real*4 dimension(5,12,31,6) :: sdl
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+            common /occ_cor/ covar,pro1,pro2,pro,high,avl,sdl
+        end subroutine av_sd_lon
+        subroutine basic(data,ave,sd,n) ! in :regionalised_daily:regionalised_daily.for
+            real dimension(n) :: data
+            real :: ave
+            real :: sd
+            integer, optional,check(shape(data, 0) == n),depend(data) :: n=shape(data, 0)
+        end subroutine basic
+        subroutine prevavsd0(xc,xp3,nstn,nv,kp,rain,ppav,ppcov,pav,pcov,iflag,nearmax,nstnmax,nvrmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nearmax,nstnmax) :: xc
+            real*4 dimension(nvrmax,nearmax,nstnmax),depend(nstnmax,nearmax) :: xp3
+            integer :: nstn
+            integer :: nv
+            integer dimension(nstnmax),depend(nstnmax) :: kp
+            real :: rain
+            real*4 dimension(2,nvrmax,nstnmax),depend(nvrmax,nstnmax) :: ppav
+            real*4 dimension(2,nvrmax,nvrmax,nstnmax),depend(nvrmax,nstnmax) :: ppcov
+            real*4 dimension(2,nvrmax,nstnmax),depend(nvrmax,nstnmax) :: pav
+            real*4 dimension(2,nvrmax,nvrmax,nstnmax),depend(nvrmax,nstnmax) :: pcov
+            integer :: iflag
+            integer, optional,check(shape(xc, 0) == nearmax),depend(xc) :: nearmax=shape(xc, 0)
+            integer, optional,check(shape(xc, 1) == nstnmax),depend(xc) :: nstnmax=shape(xc, 1)
+            integer, optional,check(shape(xp3, 0) == nvrmax),depend(xp3) :: nvrmax=shape(xp3, 0)
+        end subroutine prevavsd0
+        subroutine prevavsd1(xc,xp1,xp3,nstn,nv,kp,rain,ppav,ppcov,pav,pcov,iflag,nearmax,nstnmax,nvrmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nearmax,nstnmax) :: xc
+            real*4 dimension(nearmax,nstnmax),depend(nstnmax,nearmax) :: xp1
+            real*4 dimension(nvrmax,nearmax,nstnmax),depend(nstnmax,nearmax) :: xp3
+            integer :: nstn
+            integer :: nv
+            integer dimension(nstnmax),depend(nstnmax) :: kp
+            real :: rain
+            real*4 dimension(2,nvrmax,nstnmax),depend(nvrmax,nstnmax) :: ppav
+            real*4 dimension(2,nvrmax,nvrmax,nstnmax),depend(nvrmax,nstnmax) :: ppcov
+            real*4 dimension(2,nvrmax,nstnmax),depend(nvrmax,nstnmax) :: pav
+            real*4 dimension(2,nvrmax,nvrmax,nstnmax),depend(nvrmax,nstnmax) :: pcov
+            integer :: iflag
+            integer, optional,check(shape(xc, 0) == nearmax),depend(xc) :: nearmax=shape(xc, 0)
+            integer, optional,check(shape(xc, 1) == nstnmax),depend(xc) :: nstnmax=shape(xc, 1)
+            integer, optional,check(shape(xp3, 0) == nvrmax),depend(xp3) :: nvrmax=shape(xp3, 0)
+        end subroutine prevavsd1
+        subroutine solve(ss,nv,nvrmax,det) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nvrmax,nvrmax) :: ss
+            integer :: nv
+            integer, optional,check(shape(ss, 0) == nvrmax),depend(ss) :: nvrmax=shape(ss, 0)
+            real*4 :: det
+        end subroutine solve
+        subroutine matmul(a,b,c,n,nmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax,nmax) :: a
+            real*4 dimension(nmax,nmax),depend(nmax) :: b
+            real*4 dimension(nmax,nmax),depend(nmax) :: c
+            integer :: n
+            integer, optional,check(shape(a, 0) == nmax),depend(a) :: nmax=shape(a, 0)
+        end subroutine matmul
+        subroutine svdcmp(a,m,n,mp,np,w,v) ! in :regionalised_daily:regionalised_daily.for
+            real dimension(mp,np) :: a
+            integer :: m
+            integer :: n
+            integer, optional,check(shape(a, 0) == mp),depend(a) :: mp=shape(a, 0)
+            integer, optional,check(shape(a, 1) == np),depend(a) :: np=shape(a, 1)
+            real dimension(np),depend(np) :: w
+            real dimension(np,np),depend(np) :: v
+        end subroutine svdcmp
+        subroutine smoothavcov ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            real*4 dimension(12,31,6,6) :: covar
+            real*4 dimension(12,31,6) :: pro1
+            real*4 dimension(12,31,6) :: pro2
+            real*4 dimension(12,31,6) :: pro
+            real*4 dimension(30,200,12,31) :: high
+            real*4 dimension(5,12,31,6) :: avl
+            real*4 dimension(5,12,31,6) :: sdl
+            real*4 dimension(12,31,5,6) :: pp1lav
+            real*4 dimension(12,31,5,6) :: pp2lav
+            real*4 dimension(12,31,25,6) :: pp1lcov
+            real*4 dimension(12,31,25,6) :: pp2lcov
+            real*4 dimension(12,31,5,6) :: p1lav
+            real*4 dimension(12,31,5,6) :: p2lav
+            real*4 dimension(12,31,25,6) :: p1lcov
+            real*4 dimension(12,31,25,6) :: p2lcov
+            real*4 dimension(12,31,5,6) :: plmin
+            real*4 dimension(12,31,5,6) :: plmax
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+            common /occ_cor/ covar,pro1,pro2,pro,high,avl,sdl
+            common /p_cond/ pp1lav,pp2lav,pp1lcov,pp2lcov,p1lav,p2lav,p1lcov,p2lcov
+            common /aminmax/ plmin,plmax
+        end subroutine smoothavcov
+        subroutine rank_bn(xc,xp,ixn,nn,nstn,nearmax,nstnmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nearmax,nstnmax) :: xc
+            real*4 dimension(nearmax,nstnmax),depend(nstnmax,nearmax) :: xp
+            integer dimension(nearmax,nstnmax),depend(nstnmax,nearmax) :: ixn
+            integer dimension(nstnmax),depend(nstnmax) :: nn
+            integer :: nstn
+            integer, optional,check(shape(xc, 0) == nearmax),depend(xc) :: nearmax=shape(xc, 0)
+            integer, optional,check(shape(xc, 1) == nstnmax),depend(xc) :: nstnmax=shape(xc, 1)
+        end subroutine rank_bn
+        subroutine rf_amt_store ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            real*4 dimension(6200,12,31,6) :: rfcur
+            real*4 dimension(6200,12,31,6) :: rfprv
+            real*4 dimension(6,12,31,5) :: stnwt1
+            real*4 dimension(6,12,31,5) :: stnwt2
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+            common /rfamount/ rfcur,rfprv,stnwt1,stnwt2
+        end subroutine rf_amt_store
+        subroutine sur(rf,ny,nstn,spell,rfspl,rfspn,rfspnd,sol,nout,im,ns,rain,wmax,dmax) ! in :regionalised_daily:regionalised_daily.for
+            real dimension(6,200,12,31) :: rf
+            integer :: ny
+            integer :: nstn
+            real dimension(6,15,200) :: spell
+            real dimension(6,15) :: rfspl
+            real dimension(6,15) :: rfspn
+            real dimension(6,15) :: rfspnd
+            real dimension(6) :: sol
+            integer :: nout
+            integer dimension(12) :: im
+            integer :: ns
+            real :: rain
+            real dimension(6) :: wmax
+            real dimension(6) :: dmax
+        end subroutine sur
+        subroutine basic1(xx,aver,sd,n,mm) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(200,12) :: xx
+            real*4 dimension(12) :: aver
+            real*4 dimension(12) :: sd
+            integer :: n
+            integer :: mm
+        end subroutine basic1
+        subroutine rank_stat(xx,np,ny,nstn) ! in :regionalised_daily:regionalised_daily.for
+            real dimension(6,15,200) :: xx
+            integer :: np
+            integer :: ny
+            integer :: nstn
+        end subroutine rank_stat
+        subroutine stat_h(rf,nstn,ns,nyear,rain,nout,nday,isn) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: ns
+            integer :: nyear
+            real :: rain
+            integer :: nout
+            integer dimension(12) :: nday
+            integer :: isn
+            real*4 dimension(6) :: solh
+            real*4 dimension(6) :: sol
+            real*4 dimension(100,6) :: solg
+            real*4 dimension(6,15,200) :: spellh
+            real*4 dimension(6,15,200) :: spell
+            real :: spellg
+            real :: dmaxh
+            real :: dmax
+            real :: dmaxg
+            real :: wmaxh
+            real :: wmax
+            real :: wmaxg
+            real :: rfavmh
+            real :: rfsdmh
+            real :: roavmh
+            real :: rosdmh
+            real :: rwavmh
+            real :: rwsdmh
+            real :: rfavsh
+            real :: rfsdsh
+            real :: roavsh
+            real :: rosdsh
+            real :: rwavsh
+            real :: rwsdsh
+            real :: rfavm
+            real :: rfsdm
+            real :: roavm
+            real :: rosdm
+            real :: rwavm
+            real :: rwsdm
+            real :: rfavs
+            real :: rfsds
+            real :: roavs
+            real :: rosds
+            real :: rwavs
+            real :: rwsds
+            real :: rfavmg
+            real :: rfsdmg
+            real :: roavmg
+            real :: rosdmg
+            real :: rwavmg
+            real :: rwsdmg
+            real :: rfavsg
+            real :: rfsdsg
+            real :: roavsg
+            real :: rosdsg
+            real :: rwavsg
+            real :: rwsdsg
+            real :: hperh
+            real :: hper
+            real :: hperg
+            real*4 dimension(6,15) :: rfsplh
+            real*4 dimension(6,15) :: rfspl
+            real*4 dimension(100,6,15) :: rfsplg
+            real*4 dimension(6,15) :: rfspnh
+            real*4 dimension(6,15) :: rfspn
+            real*4 dimension(100,6,15) :: rfspng
+            real*4 dimension(6,15) :: rfspndh
+            real*4 dimension(6,15) :: rfspnd
+            real*4 dimension(100,6,15) :: rfspndg
+            real*4 dimension(5,6,6) :: crsodh
+            real*4 dimension(5,6,6) :: crsoh
+            real*4 dimension(5,6,6) :: crsrh
+            real*4 dimension(5,6,6) :: crsrdwh
+            real*4 dimension(5,6,6) :: crsrdah
+            real*4 dimension(100,5,6,6) :: crsodg
+            real*4 dimension(100,5,6,6) :: crsog
+            real*4 dimension(100,5,6,6) :: crsrg
+            real*4 dimension(100,5,6,6) :: crsrdwg
+            real*4 dimension(100,5,6,6) :: crsrdag
+            real*4 dimension(5,6,6) :: crsod
+            real*4 dimension(5,6,6) :: crso
+            real*4 dimension(5,6,6) :: crsr
+            real*4 dimension(5,6,6) :: crsrdw
+            real*4 dimension(5,6,6) :: crsrda
+            common /stat_hg/ solh,sol,solg,spellh,spell,spellg,dmaxh,dmax,dmaxg,wmaxh,wmax,wmaxg,rfavmh,rfsdmh,roavmh,rosdmh,rwavmh,rwsdmh,rfavsh,rfsdsh,roavsh,rosdsh,rwavsh,rwsdsh,rfavm,rfsdm,roavm,rosdm,rwavm,rwsdm,rfavs,rfsds,roavs,rosds,rwavs,rwsds,rfavmg,rfsdmg,roavmg,rosdmg,rwavmg,rwsdmg,rfavsg,rfsdsg,roavsg,rosdsg,rwavsg,rwsdsg,hperh,hper,hperg,rfsplh,rfspl,rfsplg,rfspnh,rfspn,rfspng,rfspndh,rfspnd,rfspndg,crsodh,crsoh,crsrh,crsrdwh,crsrdah,crsodg,crsog,crsrg,crsrdwg,crsrdag,crsod,crso,crsr,crsrdw,crsrda
+        end subroutine stat_h
+        subroutine dmon(hist,ny,nstn,rwavs,rwsds,rfavm,rfsdm,rfavs,rfsds,roavm,rosdm,roavs,rosds,nout,im,ns,rain,isn) ! in :regionalised_daily:regionalised_daily.for
+            real dimension(6,200,12,31) :: hist
+            integer :: ny
+            integer :: nstn
+            real dimension(6,5) :: rwavs
+            real dimension(6,5) :: rwsds
+            real dimension(6,12) :: rfavm
+            real dimension(6,12) :: rfsdm
+            real dimension(6,5) :: rfavs
+            real dimension(6,5) :: rfsds
+            real dimension(6,12) :: roavm
+            real dimension(6,12) :: rosdm
+            real dimension(6,5) :: roavs
+            real dimension(6,5) :: rosds
+            integer :: nout
+            integer dimension(12) :: im
+            integer :: ns
+            real :: rain
+            integer :: isn
+        end subroutine dmon
+        subroutine percentile(hist,ny,nstn,nout,im,hper,rain,isn,ns) ! in :regionalised_daily:regionalised_daily.for
+            real dimension(6,200,12,31) :: hist
+            integer :: ny
+            integer :: nstn
+            integer, optional,check(shape(im, 0) == nout),depend(im) :: nout=shape(im, 0)
+            integer dimension(nout) :: im
+            real dimension(6,5) :: hper
+            real :: rain
+            integer :: isn
+            integer :: ns
+        end subroutine percentile
+        subroutine logodd(colv,nstn,ny,alg,nday,ns,nout,rain,isn) ! in :regionalised_daily:regionalised_daily.for
+            real dimension(6,200,12,31) :: colv
+            integer :: nstn
+            integer :: ny
+            real dimension(5,6,6) :: alg
+            integer dimension(12) :: nday
+            integer :: ns
+            integer :: nout
+            real :: rain
+            integer :: isn
+        end subroutine logodd
+        subroutine crscors(hist,ny,nday,ns,nstn,crs,nout,rain,isn,ind) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6,200,12,31) :: hist
+            integer :: ny
+            integer dimension(nout) :: nday
+            integer :: ns
+            integer :: nstn
+            real*4 dimension(5,6,6) :: crs
+            integer, optional,check(shape(nday, 0) == nout),depend(nday) :: nout=shape(nday, 0)
+            real :: rain
+            integer :: isn
+            integer :: ind
+        end subroutine crscors
+        subroutine crscor(hist,ny,nday,ns,nstn,crs,nout,rain,isn,ind) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6,200,12,31) :: hist
+            integer :: ny
+            integer dimension(12) :: nday
+            integer :: ns
+            integer :: nstn
+            real*4 dimension(5,6,6) :: crs
+            integer :: nout
+            real :: rain
+            integer :: isn
+            integer :: ind
+        end subroutine crscor
+        subroutine firsttimeh(ist,nk,sumlon,ind) ! in :regionalised_daily:regionalised_daily.for
+            integer :: ist
+            integer :: nk
+            real*4 dimension(5,900) :: sumlon
+            integer :: ind
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+        end subroutine firsttimeh
+        subroutine aloncov(pav,ppav,pcov,ppcov,det,ddet,p1,llag,rain,nv,nk,j,l1) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(5) :: pav
+            real*4 dimension(5) :: ppav
+            real*4 dimension(5,5) :: pcov
+            real*4 dimension(5,5) :: ppcov
+            real :: det
+            real :: ddet
+            real*4 :: p1
+            integer :: llag
+            real :: rain
+            integer :: nv
+            integer :: nk
+            integer :: j
+            integer :: l1
+            real*4 dimension(12,31,5,6) :: pp1lav
+            real*4 dimension(12,31,5,6) :: pp2lav
+            real*4 dimension(12,31,25,6) :: pp1lcov
+            real*4 dimension(12,31,25,6) :: pp2lcov
+            real*4 dimension(12,31,5,6) :: p1lav
+            real*4 dimension(12,31,5,6) :: p2lav
+            real*4 dimension(12,31,25,6) :: p1lcov
+            real*4 dimension(12,31,25,6) :: p2lcov
+            common /p_cond/ pp1lav,pp2lav,pp1lcov,pp2lcov,p1lav,p2lav,p1lcov,p2lcov
+        end subroutine aloncov
+        subroutine check_lon(igen,sumlon,lon,nlon) ! in :regionalised_daily:regionalised_daily.for
+            integer :: igen
+            real*4 dimension(5,900) :: sumlon
+            integer dimension(2,5) :: lon
+            integer :: nlon
+        end subroutine check_lon
+        subroutine multiply(x,av,cov,nv,nvrmax,sss) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nvrmax) :: x
+            real*4 dimension(nvrmax),depend(nvrmax) :: av
+            real*4 dimension(nvrmax,nvrmax),depend(nvrmax) :: cov
+            integer :: nv
+            integer, optional,check(shape(x, 0) == nvrmax),depend(x) :: nvrmax=shape(x, 0)
+            real*4 :: sss
+        end subroutine multiply
+        subroutine calc_href(nx,nv,h) ! in :regionalised_daily:regionalised_daily.for
+            integer :: nx
+            integer :: nv
+            real :: h
+        end subroutine calc_href
+        subroutine rank_h(y,n,rn,nmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax) :: y
+            integer :: n
+            real :: rn
+            integer, optional,check(shape(y, 0) == nmax),depend(y) :: nmax=shape(y, 0)
+        end subroutine rank_h
+        subroutine hfracx(x,hgamma,n,nv,nmax,nvmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax,nvmax) :: x
+            real*4 dimension(nmax,nvmax),depend(nvmax,nmax) :: hgamma
+            integer :: n
+            integer :: nv
+            integer, optional,check(shape(x, 0) == nmax),depend(x) :: nmax=shape(x, 0)
+            integer, optional,check(shape(x, 1) == nvmax),depend(x) :: nvmax=shape(x, 1)
+        end subroutine hfracx
+        subroutine hfracy(z,xgiven,hgamma,n,nmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax) :: z
+            real :: xgiven
+            real :: hgamma
+            integer :: n
+            integer, optional,check(shape(z, 0) == nmax),depend(z) :: nmax=shape(z, 0)
+        end subroutine hfracy
+        subroutine estxcpdfstats(x,nx,nv,xt,nn,weight,cov,wx,xcond,sxxi,h,wts,nvmax,nmax,hgammax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax,nvmax) :: x
+            integer :: nx
+            integer :: nv
+            real*4 dimension(nmax,nvmax),depend(nvmax,nmax) :: xt
+            integer :: nn
+            real*4 dimension(nvmax),depend(nvmax) :: weight
+            real*4 dimension(nvmax,nvmax),depend(nvmax) :: cov
+            real*4 dimension(nmax,nvmax),depend(nvmax,nmax) :: wx
+            real*4 dimension(nvmax),depend(nvmax) :: xcond
+            real*4 dimension(nvmax,nvmax),depend(nvmax) :: sxxi
+            real :: h
+            real*4 dimension(nmax),depend(nmax) :: wts
+            integer, optional,check(shape(x, 1) == nvmax),depend(x) :: nvmax=shape(x, 1)
+            integer, optional,check(shape(x, 0) == nmax),depend(x) :: nmax=shape(x, 0)
+            real*4 dimension(nmax,nvmax),depend(nvmax,nmax) :: hgammax
+        end subroutine estxcpdfstats
+        subroutine matmul1(a,b,c,nv,nvmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nvmax,nvmax) :: a
+            real*4 dimension(nvmax),depend(nvmax) :: b
+            real*4 dimension(nvmax),depend(nvmax) :: c
+            integer :: nv
+            integer, optional,check(shape(a, 0) == nvmax),depend(a) :: nvmax=shape(a, 0)
+        end subroutine matmul1
+        subroutine matmul2(a,b,c,nv,nvmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nvmax) :: a
+            real*4 dimension(nvmax),depend(nvmax) :: b
+            real*4 :: c
+            integer :: nv
+            integer, optional,check(shape(a, 0) == nvmax),depend(a) :: nvmax=shape(a, 0)
+        end subroutine matmul2
+        subroutine estscond(y,n,wy,x,nv,wx,sxxi,sxxixy,scond,nvmax,nmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax) :: y
+            integer :: n
+            real*4 dimension(nmax),depend(nmax) :: wy
+            real*4 dimension(nmax,nvmax),depend(nmax) :: x
+            integer :: nv
+            real*4 dimension(nmax,nvmax),depend(nvmax,nmax) :: wx
+            real*4 dimension(nvmax,nvmax),depend(nvmax) :: sxxi
+            real*4 dimension(nvmax),depend(nvmax) :: sxxixy
+            real :: scond
+            integer, optional,check(shape(x, 1) == nvmax),depend(x) :: nvmax=shape(x, 1)
+            integer, optional,check(shape(y, 0) == nmax),depend(y) :: nmax=shape(y, 0)
+        end subroutine estscond
+        subroutine psim(y,n,x,nv,xcond,sxxixy,h,wp,cwts,scond,iseed,ygen,vv,xr,rain,nvmax,nmax,hgammax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax) :: y
+            integer :: n
+            real*4 dimension(nmax,nvmax),depend(nmax) :: x
+            integer :: nv
+            real*4 dimension(nvmax),depend(nvmax) :: xcond
+            real*4 dimension(nvmax),depend(nvmax) :: sxxixy
+            real :: h
+            real*4 dimension(nvmax),depend(nvmax) :: wp
+            real*4 dimension(nmax),depend(nmax) :: cwts
+            real :: scond
+            integer :: iseed
+            real :: ygen
+            real :: vv
+            real :: xr
+            real :: rain
+            integer, optional,check(shape(x, 1) == nvmax),depend(x) :: nvmax=shape(x, 1)
+            integer, optional,check(shape(y, 0) == nmax),depend(y) :: nmax=shape(y, 0)
+            real*4 dimension(nmax,nvmax),depend(nvmax,nmax) :: hgammax
+        end subroutine psim
+        subroutine psimmain(y,n,x,nv,xcond,ys,iseed,vv,xr,rain,weight,nmax,nvmax,ind) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(nmax) :: y
+            integer :: n
+            real*4 dimension(nmax,nvmax),depend(nmax) :: x
+            integer :: nv
+            real*4 dimension(nvmax),depend(nvmax) :: xcond
+            real :: ys
+            integer :: iseed
+            real :: vv
+            real :: xr
+            real :: rain
+            real*4 dimension(nvmax),depend(nvmax) :: weight
+            integer, optional,check(shape(y, 0) == nmax),depend(y) :: nmax=shape(y, 0)
+            integer, optional,check(shape(x, 1) == nvmax),depend(x) :: nvmax=shape(x, 1)
+            integer :: ind
+        end subroutine psimmain
+        subroutine stat_g(itr,rf_gen,nstn,nsg,ng,rain,nout,nday,isn) ! in :regionalised_daily:regionalised_daily.for
+            integer :: itr
+            real*4 dimension(6,200,12,31) :: rf_gen
+            integer :: nstn
+            integer :: nsg
+            integer :: ng
+            real :: rain
+            integer :: nout
+            integer dimension(12) :: nday
+            integer :: isn
+            real*4 dimension(6) :: solh
+            real*4 dimension(6) :: sol
+            real*4 dimension(100,6) :: solg
+            real*4 dimension(6,15,200) :: spellh
+            real*4 dimension(6,15,200) :: spell
+            real :: spellg
+            real :: dmaxh
+            real :: dmax
+            real :: dmaxg
+            real :: wmaxh
+            real :: wmax
+            real :: wmaxg
+            real :: rfavmh
+            real :: rfsdmh
+            real :: roavmh
+            real :: rosdmh
+            real :: rwavmh
+            real :: rwsdmh
+            real :: rfavsh
+            real :: rfsdsh
+            real :: roavsh
+            real :: rosdsh
+            real :: rwavsh
+            real :: rwsdsh
+            real :: rfavm
+            real :: rfsdm
+            real :: roavm
+            real :: rosdm
+            real :: rwavm
+            real :: rwsdm
+            real :: rfavs
+            real :: rfsds
+            real :: roavs
+            real :: rosds
+            real :: rwavs
+            real :: rwsds
+            real :: rfavmg
+            real :: rfsdmg
+            real :: roavmg
+            real :: rosdmg
+            real :: rwavmg
+            real :: rwsdmg
+            real :: rfavsg
+            real :: rfsdsg
+            real :: roavsg
+            real :: rosdsg
+            real :: rwavsg
+            real :: rwsdsg
+            real :: hperh
+            real :: hper
+            real :: hperg
+            real*4 dimension(6,15) :: rfsplh
+            real*4 dimension(6,15) :: rfspl
+            real*4 dimension(100,6,15) :: rfsplg
+            real*4 dimension(6,15) :: rfspnh
+            real*4 dimension(6,15) :: rfspn
+            real*4 dimension(100,6,15) :: rfspng
+            real*4 dimension(6,15) :: rfspndh
+            real*4 dimension(6,15) :: rfspnd
+            real*4 dimension(100,6,15) :: rfspndg
+            real*4 dimension(5,6,6) :: crsodh
+            real*4 dimension(5,6,6) :: crsoh
+            real*4 dimension(5,6,6) :: crsrh
+            real*4 dimension(5,6,6) :: crsrdwh
+            real*4 dimension(5,6,6) :: crsrdah
+            real*4 dimension(100,5,6,6) :: crsodg
+            real*4 dimension(100,5,6,6) :: crsog
+            real*4 dimension(100,5,6,6) :: crsrg
+            real*4 dimension(100,5,6,6) :: crsrdwg
+            real*4 dimension(100,5,6,6) :: crsrdag
+            real*4 dimension(5,6,6) :: crsod
+            real*4 dimension(5,6,6) :: crso
+            real*4 dimension(5,6,6) :: crsr
+            real*4 dimension(5,6,6) :: crsrdw
+            real*4 dimension(5,6,6) :: crsrda
+            common /stat_hg/ solh,sol,solg,spellh,spell,spellg,dmaxh,dmax,dmaxg,wmaxh,wmax,wmaxg,rfavmh,rfsdmh,roavmh,rosdmh,rwavmh,rwsdmh,rfavsh,rfsdsh,roavsh,rosdsh,rwavsh,rwsdsh,rfavm,rfsdm,roavm,rosdm,rwavm,rwsdm,rfavs,rfsds,roavs,rosds,rwavs,rwsds,rfavmg,rfsdmg,roavmg,rosdmg,rwavmg,rwsdmg,rfavsg,rfsdsg,roavsg,rosdsg,rwavsg,rwsdsg,hperh,hper,hperg,rfsplh,rfspl,rfsplg,rfspnh,rfspn,rfspng,rfspndh,rfspnd,rfspndg,crsodh,crsoh,crsrh,crsrdwh,crsrdah,crsodg,crsog,crsrg,crsrdwg,crsrdag,crsod,crso,crsr,crsrdw,crsrda
+        end subroutine stat_g
+        subroutine simulate(ws,avrf,tavrf) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(6) :: ws
+            real*4 dimension(6) :: avrf
+            real*4 :: tavrf
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            real*4 dimension(12,31,6,6) :: covar
+            real*4 dimension(12,31,6) :: pro1
+            real*4 dimension(12,31,6) :: pro2
+            real*4 dimension(12,31,6) :: pro
+            real*4 dimension(30,200,12,31) :: high
+            real*4 dimension(5,12,31,6) :: avl
+            real*4 dimension(5,12,31,6) :: sdl
+            real*4 dimension(12,31,5,6) :: pp1lav
+            real*4 dimension(12,31,5,6) :: pp2lav
+            real*4 dimension(12,31,25,6) :: pp1lcov
+            real*4 dimension(12,31,25,6) :: pp2lcov
+            real*4 dimension(12,31,5,6) :: p1lav
+            real*4 dimension(12,31,5,6) :: p2lav
+            real*4 dimension(12,31,25,6) :: p1lcov
+            real*4 dimension(12,31,25,6) :: p2lcov
+            real*4 dimension(12,31,5,6) :: plmin
+            real*4 dimension(12,31,5,6) :: plmax
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+            common /occ_cor/ covar,pro1,pro2,pro,high,avl,sdl
+            common /p_cond/ pp1lav,pp2lav,pp1lcov,pp2lcov,p1lav,p2lav,p1lcov,p2lcov
+            common /aminmax/ plmin,plmax
+        end subroutine simulate
+        subroutine wetdays(wet,rfwet) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(5,6) :: wet
+            real*4 dimension(5,6) :: rfwet
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+        end subroutine wetdays
+        subroutine rf_amt_gen(icur,gen,nk,ic,jc,lc,p1,inext) ! in :regionalised_daily:regionalised_daily.for
+            integer :: icur
+            real*4 :: gen
+            integer :: nk
+            integer :: ic
+            integer :: jc
+            integer :: lc
+            real*4 :: p1
+            integer :: inext
+            real*4 dimension(6,200,12,31) :: rf
+            integer :: nstn
+            integer :: nout
+            integer :: iband
+            integer :: ndata
+            integer :: iprf
+            integer :: nrain
+            real*4 :: rain
+            integer dimension(12) :: nday
+            integer :: nvar
+            integer :: nsim
+            integer :: monst
+            integer :: moned
+            integer :: nprev
+            integer :: ng
+            integer :: nsg
+            real :: gend
+            integer :: llag
+            integer :: lav
+            integer :: iwet
+            integer dimension(2,5) :: lon
+            integer :: nlon
+            integer dimension(6) :: nlav
+            integer :: nprev1
+            integer :: ijl
+            integer :: iyrst
+            integer :: iseed
+            integer :: isn
+            integer dimension(5,6) :: npp
+            integer :: iat
+            integer dimension(5,6) :: npr
+            integer :: iamt
+            integer :: nlonr
+            integer :: ispl
+            integer :: nlocal
+            integer dimension(6) :: nyrs
+            integer dimension(6) :: nstrt
+            real*4 dimension(6200,12,31,6) :: rfcur
+            real*4 dimension(6200,12,31,6) :: rfprv
+            real*4 dimension(6,12,31,5) :: stnwt1
+            real*4 dimension(6,12,31,5) :: stnwt2
+            common /data/ rf,nstn,nout,iband,ndata,iprf,nrain,rain,nday,nvar,nsim,monst,moned,nprev,ng,nsg,gend,llag,lav,iwet,lon,nlon,nlav,nprev1,ijl,iyrst,iseed,isn,npp,iat,npr,iamt,nlonr,ispl,nlocal,nyrs,nstrt
+            common /rfamount/ rfcur,rfprv,stnwt1,stnwt2
+        end subroutine rf_amt_gen
+        subroutine rank_r3(x,nstn,isn,nsim,nstnmax,isnmax,itrmax) ! in :regionalised_daily:regionalised_daily.for
+            real*4 dimension(itrmax,isnmax,nstnmax,nstnmax) :: x
+            integer :: nstn
+            integer :: isn
+            integer :: nsim
+            integer, optional,check(shape(x, 2) == nstnmax),depend(x) :: nstnmax=shape(x, 2)
+            integer, optional,check(shape(x, 1) == isnmax),depend(x) :: isnmax=shape(x, 1)
+            integer, optional,check(shape(x, 0) == itrmax),depend(x) :: itrmax=shape(x, 0)
+        end subroutine rank_r3
+        subroutine rank1_stat(xx,nsim,ny,np,nstn) ! in :regionalised_daily:regionalised_daily.for
+            real dimension(100,6,15,200) :: xx
+            integer :: nsim
+            integer :: ny
+            integer :: np
+            integer :: nstn
+        end subroutine rank1_stat
+        subroutine result(isn,nstn,nsim,nout,nyear,ng) ! in :regionalised_daily:regionalised_daily.for
+            integer :: isn
+            integer :: nstn
+            integer :: nsim
+            integer :: nout
+            integer :: nyear
+            integer :: ng
+            real*4 dimension(6) :: solh
+            real*4 dimension(6) :: sol
+            real*4 dimension(100,6) :: solg
+            real*4 dimension(6,15,200) :: spellh
+            real*4 dimension(6,15,200) :: spell
+            real :: spellg
+            real :: dmaxh
+            real :: dmax
+            real :: dmaxg
+            real :: wmaxh
+            real :: wmax
+            real :: wmaxg
+            real :: rfavmh
+            real :: rfsdmh
+            real :: roavmh
+            real :: rosdmh
+            real :: rwavmh
+            real :: rwsdmh
+            real :: rfavsh
+            real :: rfsdsh
+            real :: roavsh
+            real :: rosdsh
+            real :: rwavsh
+            real :: rwsdsh
+            real :: rfavm
+            real :: rfsdm
+            real :: roavm
+            real :: rosdm
+            real :: rwavm
+            real :: rwsdm
+            real :: rfavs
+            real :: rfsds
+            real :: roavs
+            real :: rosds
+            real :: rwavs
+            real :: rwsds
+            real :: rfavmg
+            real :: rfsdmg
+            real :: roavmg
+            real :: rosdmg
+            real :: rwavmg
+            real :: rwsdmg
+            real :: rfavsg
+            real :: rfsdsg
+            real :: roavsg
+            real :: rosdsg
+            real :: rwavsg
+            real :: rwsdsg
+            real :: hperh
+            real :: hper
+            real :: hperg
+            real*4 dimension(6,15) :: rfsplh
+            real*4 dimension(6,15) :: rfspl
+            real*4 dimension(100,6,15) :: rfsplg
+            real*4 dimension(6,15) :: rfspnh
+            real*4 dimension(6,15) :: rfspn
+            real*4 dimension(100,6,15) :: rfspng
+            real*4 dimension(6,15) :: rfspndh
+            real*4 dimension(6,15) :: rfspnd
+            real*4 dimension(100,6,15) :: rfspndg
+            real*4 dimension(5,6,6) :: crsodh
+            real*4 dimension(5,6,6) :: crsoh
+            real*4 dimension(5,6,6) :: crsrh
+            real*4 dimension(5,6,6) :: crsrdwh
+            real*4 dimension(5,6,6) :: crsrdah
+            real*4 dimension(100,5,6,6) :: crsodg
+            real*4 dimension(100,5,6,6) :: crsog
+            real*4 dimension(100,5,6,6) :: crsrg
+            real*4 dimension(100,5,6,6) :: crsrdwg
+            real*4 dimension(100,5,6,6) :: crsrdag
+            real*4 dimension(5,6,6) :: crsod
+            real*4 dimension(5,6,6) :: crso
+            real*4 dimension(5,6,6) :: crsr
+            real*4 dimension(5,6,6) :: crsrdw
+            real*4 dimension(5,6,6) :: crsrda
+            common /stat_hg/ solh,sol,solg,spellh,spell,spellg,dmaxh,dmax,dmaxg,wmaxh,wmax,wmaxg,rfavmh,rfsdmh,roavmh,rosdmh,rwavmh,rwsdmh,rfavsh,rfsdsh,roavsh,rosdsh,rwavsh,rwsdsh,rfavm,rfsdm,roavm,rosdm,rwavm,rwsdm,rfavs,rfsds,roavs,rosds,rwavs,rwsds,rfavmg,rfsdmg,roavmg,rosdmg,rwavmg,rwsdmg,rfavsg,rfsdsg,roavsg,rosdsg,rwavsg,rwsdsg,hperh,hper,hperg,rfsplh,rfspl,rfsplg,rfspnh,rfspn,rfspng,rfspndh,rfspnd,rfspndg,crsodh,crsoh,crsrh,crsrdwh,crsrdah,crsodg,crsog,crsrg,crsrdwg,crsrdag,crsod,crso,crsr,crsrdw,crsrda
+        end subroutine result
+        function iseas(j,isn) ! in :regionalised_daily:regionalised_daily.for
+            integer :: j
+            integer :: isn
+            integer :: iseas
+        end function iseas
+        function ran1(idum) ! in :regionalised_daily:regionalised_daily.for
+            integer :: idum
+            real :: ran1
+        end function ran1
+        function gasdev(idum) ! in :regionalised_daily:regionalised_daily.for
+            integer :: idum
+            real*4 :: gasdev
+        end function gasdev
+    end interface 
+end python module regionalised_daily
+
+! This file was auto-generated with f2py (version:1.23.4).
+! See:
+! https://web.archive.org/web/20140822061353/http://cens.ioc.ee/projects/f2py2e

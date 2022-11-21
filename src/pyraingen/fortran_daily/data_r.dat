@@ -1,0 +1,20 @@
+Main data file to supply values of input parameters & names of data files
+ Rain   iband nstation nsim  nlon  lag  ng   nsgtart   iamt  ival  irf
+ 0.30    15     5       100    3   1    79     1930      1    0     1
+Number of previous time lags (in days) for nlon 
+ 2   2   2
+ 90 180 345
+Name of file to write the details of nearby stations
+nearby_station_details.out
+Target station details
+index    latitude   longitude elevation(m)  distance to coast(km) annual rainfall (mm)
+66037   -33.9410     151.1730     6.00             0.27                    1086.71  
+Path name where data files are stored
+./daily_data/
+Name of output file where simulated daily rainfall is stored
+mmm_66037.out
+Name of output file where statistices of observed and simulated daily rainfall is stored
+stat_66037.out
+data file name of the target station for validation(required if ival is >0)
+rev_dr066037.txt
+
