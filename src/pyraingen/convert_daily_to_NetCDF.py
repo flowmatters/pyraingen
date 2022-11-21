@@ -17,8 +17,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Import Defined Functions
-from datevectojd import datevecToJD
-from producedailynetcdf import produceDailyNetCDF
+from .datevectojd import datevecToJD
+from .producedailynetcdf import produceDailyNetCDF
 
 def convertdailync(fnameSRC, fnameTRG, yearStart, nYears, nSims, missingDay = -999.9):
     """Convert Daily Simulations to NetCDF. This is a utility to convert the text files generated from the reference
