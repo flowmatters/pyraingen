@@ -4,7 +4,7 @@ import os
 from .fortran_daily import regionalised_daily
 from .convert_daily_to_NetCDF import convertdailync
 
-def regionalisedsubdailysim(nyears, startyear, nsim,
+def regionaliseddailysim(nyears, startyear, nsim,
                             targetidx, targetlat, targetlon, 
                             targetelev, targetdcoast, targetanrf,
                             data_path, output_path_txt, 
