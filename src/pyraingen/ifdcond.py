@@ -59,7 +59,8 @@ def ifdcond(fileNameInput, fileNameOutput, fileNameTargetIFD,
     fileNameOutput : str
         File name and location to store corrected output data.
     fileNameTargetIFD : str 
-        File name and location for target IFD data.
+        File name and location for target IFD data. Data should be csv with size
+        rows = durations, cols = Frequencies (AEP). No headers or row labels.
     nSims : int
         Number of data simulations in input data that are to  be corrected. 
     nRecursions : int

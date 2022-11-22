@@ -10,7 +10,14 @@ $ pip install pyraingen
 
 ## Usage
 
-- TODO
+`pyraingen` can be used to stochastically generate regionalised daily rainfall, disaggregate daily rainfall to subdaily fragments and constrain generated rainfall to observed or predicted Intensity Frequency Duration (IFD) relationships.
+The three main functions are:
+
+```python
+from pyraingen.regionaliseddailysim import regionaliseddailysim
+from pyraingen.regionalisedsubdailysim import regionalisedsubdailysim
+from pyraingen.ifdcond import ifdcond
+```
 
 ## Contributing
 
