@@ -2,7 +2,8 @@ import shutil
 from importlib import resources
 
 def copy_fortran_data():
-
+    """Copy necessary fortran input data to working directory..
+    """
     with resources.path("pyraingen.fortran_daily", "data.inc") as f:
         src_pth = f
     shutil.copy(src_pth, "data.inc")
