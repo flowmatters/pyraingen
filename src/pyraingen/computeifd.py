@@ -31,8 +31,7 @@ def computeIFD(rainfallSeries, yearsVector, ifdDurations):
     
     # Define some constants:
     # Standard duration of IFD used
-    # NB: these are in mintes for compatability with further calculations
-    ifdDurations = ifdDurations
+    # NB: ifdDurations are in mintes for compatability with further calculations
 
     # Number of six minute records per day:
     nRecordsPerDay = 240

@@ -10,4 +10,4 @@ def get_for_path():
     """
     with resources.path("pyraingen.fortran_daily", "regionalised_daily.for") as f:
         data_file_path = f
-    return data_file_path
+    return str(data_file_path)

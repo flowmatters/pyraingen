@@ -47,8 +47,9 @@ from .producesubdailynetcdf import produceSubDailyNetCDF
 from .global_ import nSeasons
 from .global_ import ndaysYearLeap
 
-def regionalisedsubdailysim(fnameInput, pathSubDaily, pathReference, 
-                            pathIndex,  pathCoeff, targetIndex, fnameSubDaily='subdaily.nc',
+def regionalisedsubdailysim(fnameInput, pathSubDaily, pathIndex, 
+                            pathCoeff, targetIndex, pathReference=' ', 
+                            fnameSubDaily='subdaily.nc',
                             minYears=10, nYearsPool=500, dryWetCutoff=0.30,
                             halfWinLen=15, maxNearNeighb=10, nSims=10,
                             genSeqOption=3, nYearsRef=50,
@@ -122,8 +123,6 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathReference,
         depending on the value of genSeqOption.
     pathSubDaily : str
         Path to the sub-daily pluviograph records
-    pathReference : str
-        Path to the observed single location daily data, for genSeqOption<=2.
     pathIndex : str
         Path to station details data. Use get_index() function.
     pathCoeff : str
@@ -133,6 +132,9 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathReference,
         Index of the site to perform sub-daily disaggregation. Can be an existing
         station in the station details dataset or a chosen 6 digit index linked to 
         the gso3 data inputs.
+    pathReference : str
+        Path to the observed single location daily data, for genSeqOption<=2.
+        Default is ' '.
     fnameSubDaily : str
         File name to dump the resultant disaggregated data into.
         Default is 'subdaily.nc'.
@@ -486,7 +488,7 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathReference,
     param['DayEnd'] = DayEnd
 
     ## Step 2 b) Dissagregation Loop
-    print('Step 2 b) Perfroming subdaily disaggregation')
+    print('Step 2 b) Performing subdaily disaggregation')
     from .subdailysimloop0 import subDailySimLoop0
     from .subdailysimloop1 import subDailySimLoop1
 

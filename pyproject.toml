@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pyraingen"
-version = "0.1.0"
-description = "A package for stochastically generating daily and subdaily rainfall with ifd constaining."
+version = "0.2.0"
+description = "A package for stochastically generating daily and subdaily rainfall in Australia with ifd constraining."
 authors = ["Caleb Dykman"]
 license = "None"
 readme = "README.md"
@@ -12,6 +12,7 @@ numpy = ">=1.23.5"
 matplotlib = ">=3.6.2"
 numba = ">=0.56.4"
 netCDF4 = ">=1.6.2"
+scipy = ">=1.9.3"
 
 [tool.poetry.dev-dependencies]
 myst-nb = {version = "^0.17.1", python = "^3.8"}

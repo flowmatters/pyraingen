@@ -1,5 +1,6 @@
 import shutil
 from importlib import resources
+import os
 
 def copy_fortran_data():
     """Copy necessary fortran input data to working directory..
@@ -40,12 +41,14 @@ def copy_fortran_data():
         src_pth = f
     shutil.copy(src_pth, "para.inc")
 
-    with resources.path("pyraingen.fortran_daily", "stn_record.dat") as f:
-        src_pth = f
-    shutil.copy(src_pth, "stn_record.dat")
+    if not os.path.exists("stn_record.dat"):
+        with resources.path("pyraingen.fortran_daily", "stn_record.dat") as f:
+            src_pth = f
+        shutil.copy(src_pth, "stn_record.dat")
 
-    with resources.path("pyraingen.fortran_daily", "data_r.dat") as f:
-        src_pth = f
-    shutil.copy(src_pth, "data_r.dat")
+    if not os.path.exists("data_r.dat"):
+        with resources.path("pyraingen.fortran_daily", "data_r.dat") as f:
+            src_pth = f
+        shutil.copy(src_pth, "data_r.dat")
 
     print("Copied")

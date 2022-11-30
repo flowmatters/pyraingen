@@ -10,4 +10,4 @@ def get_coeffs():
     """
     with resources.path("pyraingen.data", "coefficients.dat") as f:
         data_file_path = f
-    return data_file_path
+    return str(data_file_path)

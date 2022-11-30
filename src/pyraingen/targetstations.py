@@ -51,13 +51,13 @@ def targetStations(param, param_path, genSeqOption3, stnDetails):
         idxTarget = np.where(stnDetails['stnIndex']==param['targetIndex'])
     else:
         idxTarget = np.size(stnDetails['stnIndex'], axis=0)
-        #assuming all arrays are of same length so indicies match?
-        np.append(stnDetails['stnIndex'], idxTarget)
-        np.append(stnDetails['stnLat'], genSeqOption3['lat'])
-        np.append(stnDetails['stnLon'], genSeqOption3['lon'])
-        np.append(stnDetails['stnElevation'], genSeqOption3['elevation'])
-        np.append(stnDetails['stnDistCoast'], genSeqOption3['distToCoast'])
-        np.append(stnDetails['stnTemp'], genSeqOption3['temperature'])
+        #assuming all arrays are of same length so indicies match
+        stnDetails['stnIndex'] =  np.append(stnDetails['stnIndex'], idxTarget)
+        stnDetails['stnLat'] = np.append(stnDetails['stnLat'], genSeqOption3['lat'])
+        stnDetails['stnLon'] = np.append(stnDetails['stnLon'], genSeqOption3['lon'])
+        stnDetails['stnElevation'] = np.append(stnDetails['stnElevation'], genSeqOption3['elevation'])
+        stnDetails['stnDistCoast'] = np.append(stnDetails['stnDistCoast'], genSeqOption3['distToCoast'])
+        stnDetails['stnTemp'] = np.append(stnDetails['stnTemp'], genSeqOption3['temperature'])
 
     ## Allocate Ram
     nearStationIdx = np.zeros((nSeasons,(np.size(stnDetails['stnIndex'], axis=0))))

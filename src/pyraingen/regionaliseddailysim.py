@@ -1,14 +1,14 @@
 import numpy as np
 import os
 
-from .fortran_daily import regionalised_daily
+from .fortran_daily import regionalised_dailyT
 from .get_fortran_data import copy_fortran_data
 from .convert_daily_to_NetCDF import convertdailync
 
 def regionaliseddailysim(nyears, startyear, nsim,
                             targetidx, targetlat, targetlon, 
                             targetelev, targetdcoast, targetanrf,
-                            data_path, output_path_txt, 
+                            targettemp, data_path, output_path_txt, 
                             netcdf = True, output_path_nc='daily.nc',
                             output_stats="stat_.out", output_val="rev_.out",
                             cutoff=0.30, wind=15, nstation=5, 
@@ -38,6 +38,8 @@ def regionaliseddailysim(nyears, startyear, nsim,
         Distance to coast of target in km.
     targetanrf : float
         Annual rainfall at target in mm.
+    targettemp : float
+        Average annual maximum daily temperature at target in C.    
     datapath : str
         Path to historical daily rainfall data. Must not be longer than 72 characters.
     output_path_txt : str
@@ -115,6 +117,7 @@ def regionaliseddailysim(nyears, startyear, nsim,
     elev = str(targetelev) + ' '
     dcoast = str(targetdcoast) + ' '
     anrf = str(targetanrf) + ' '
+    temp = str(targettemp) + ' '
 
     copy_fortran_data()
     
@@ -123,7 +126,7 @@ def regionaliseddailysim(nyears, startyear, nsim,
         data_r = file.readlines()
 
     data_r[2] = ' ' + rain + iband + nstation + nsim + nlon + lag + ng + nsgtart + iamt + ival + irf +'\n'
-    data_r[10] = ' ' + idx + lat + lon + elev + dcoast + anrf +'\n'
+    data_r[10] = ' ' + idx + lat + lon + elev + dcoast + anrf + temp + '\n'
     data_r[12] = data_path +'\n'
     data_r[14] = output_path_txt +'\n'
     data_r[16] = output_stats +'\n'
@@ -138,7 +141,7 @@ def regionaliseddailysim(nyears, startyear, nsim,
     break_out_flag = False
 
     while True:
-        regionalised_daily.regionalised_daily(idrop=idrop)
+        regionalised_dailyT.regionalised_daily(idrop=idrop)
         with open('nearby_station_details.out') as file:
             print(file.read())
         nearby = np.genfromtxt('nearby_station_details.out', 
@@ -159,7 +162,7 @@ def regionaliseddailysim(nyears, startyear, nsim,
                             idrop = kk
                             break
                     else:
-                        regionalised_daily.regionalised_daily(idrop=idrop)
+                        regionalised_dailyT.regionalised_daily(idrop=idrop)
                         break_out_flag = True
                         break
                 except ValueError:

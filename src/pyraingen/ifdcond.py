@@ -26,6 +26,7 @@ from datetime import date
 import random
 import scipy.optimize
 import warnings
+import matplotlib.pyplot as plt
 warnings.simplefilter('ignore', np.RankWarning)
 
 ## Defined Functions
@@ -48,7 +49,7 @@ def ifdcond(fileNameInput, fileNameOutput, fileNameTargetIFD,
             TargetIFDdurations = [30, 60, 360, 720], 
             AEP = [63.20, 50, 20, 10, 5, 2],
             nRecordsPerDay = 240, minsPerSample = 6,
-            massScale = 1):
+            massScale = 1, plot=True):
     """Algorithm from Fitsum et al (2016) for Constraining continuous 
     rainfall simulations for derived design flood estimation.
 
@@ -84,7 +85,11 @@ def ifdcond(fileNameInput, fileNameOutput, fileNameTargetIFD,
         Default is 6.
     massScale : float
         Scaling factor for adjusting rainfall mass (~mean annual rainfall)
-        Default is 1.\n
+        Default is 1.
+    plot : bool
+        True to output Raw vs Conditioned comparison plots for each duration.
+        False to suppress.
+        Default is True
 
     Returns
     ----------
@@ -623,6 +628,31 @@ def ifdcond(fileNameInput, fileNameOutput, fileNameTargetIFD,
                     dataRaw, (nRecordsPerDay*len(dateVector), nSims), order='F')),axis=0)
                 del tmp
 
+    if plot == True:
+        fig, ax = plt.subplots(nrows=len(TargetIFDduration), ncols=1, figsize=(10,20))
+        for i in range(len(TargetIFDduration)):
+            # Raw IFD
+            ax[i].set_xlabel('Frequency (years)')
+            ax[i].set_ylabel('Depth (mm)')
+            ax[i].fill_between(np.arange(50), 
+                                IFDRaw[:,:,i].max(axis=1),
+                                IFDRaw[:,:,i].min(axis=1),
+                                alpha=0.1, label='Raw Simulations Range')
+            ax[i].plot(np.median(IFDRaw[:,:,i], axis=1),
+                        linewidth=2, alpha=0.8, 
+                        label=f'Raw Median Depth-Frequency {TargetIFDduration[i]} min')
+            #Conditioned IFD
+            ax[i].fill_between(np.arange(50), 
+                                IFDCorrected[:,:,i].max(axis=1),
+                                IFDCorrected[:,:,i].min(axis=1),
+                                alpha=0.1, label='Cond Simulations Range')
+            ax[i].plot(np.median(IFDCorrected[:,:,i], axis=1),
+                        linewidth=2, alpha=0.8, 
+                        label=f'Cond Median Depth-Frequency {TargetIFDduration[i]} min')
+            ax[i].legend()
+        plt.show()
+        fig.savefig('ifdcond_plot.png')
+    
     ## Dump the Processed Time Series to a NetCDF
     print('Saving conditioned data')
     dataRaw = np.swapaxes(dataRaw,0,2)

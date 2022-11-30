@@ -10,4 +10,4 @@ def get_index():
     """
     with resources.path("pyraingen.data", "index.nc") as f:
         data_file_path = f
-    return data_file_path
+    return str(data_file_path)
