@@ -1,6 +1,6 @@
 # pyraingen
 
-A package for stochastically generating daily and subdaily rainfall with ifd constaining.
+A package for stochastically generating daily and subdaily rainfall in Australia with ifd constraining.
 
 ## Installation
 
