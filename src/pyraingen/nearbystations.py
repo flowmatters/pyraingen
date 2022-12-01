@@ -35,19 +35,19 @@ def nearbystations(pathIndex, pathCoeff, targetIndex,
         Longitude of target site, if not in station
         details dataset.
         Defaults is None.
-    gso3_elev : float
+    elev : float
         Elevation of target site, if not in station
         details dataset.
         Default is None.
-    gso3_distcoast : float
+    distcoast : float
         Distance to coast of target site, if not in station
         details dataset.
         Default is None. 
-    gso3_anrf : float
+    anrf : float
         Average annual rainfall of target site, if not in station
         details dataset.
         Default is None.
-    gso3_temp : float
+    temp : float
         Average annual maximum daily temperature of target site, if not in station
         details dataset.
         Default is None.\n
