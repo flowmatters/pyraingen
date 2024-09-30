@@ -60,6 +60,7 @@ jobs:
           pip install .
           cd src/pyraingen/fortran_daily
           f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
+          cd ../../..
           python -m build
           
       - name: Upload distributions
