@@ -13,8 +13,10 @@ jobs:
         #   - { os: windows-2019, shell: "msys2 {0}" }
         #   - { os: ubuntu-20.04, shell: bash }
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
-        numpy-version: ["1.23", '1.24', '1.25', '1.26', '2.0']
+        python-version: ["3.9"]
+        #["3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
+        numpy-version: ['2.0']
+        #["1.23", '1.24', '1.25', '1.26', '2.0']
         exclude:
           - os: ubuntu-latest
             python-version: "3.8"
@@ -46,7 +48,6 @@ jobs:
           sudo apt-get install -y gcc gfortran libhdf5-serial-dev
       
       - name: build
-        # if: contains(matrix.os, 'ubuntu')
         run: |
           pip install build numpy==${{matrix.numpy-version}}
           pip install .
@@ -54,9 +55,27 @@ jobs:
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           cd ../../..
           python -m build
-          
+          git add src/pyraingen/fortran_daily/regionalised_dailyT*.so -f
+          git add src/pyraingen/fortran_daily/regionalised_dailyT*.dll -f
+      
+      - name: test install
+        run: |
+          pip install dist/*.whl --force-reinstall
+          python -c "from pyraingen.regionaliseddailysim import regionaliseddailysim"
+
       - name: Upload distributions
         uses: actions/upload-artifact@v4
         with:
           name: release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}
           path: dist/
+
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     name: ${{matrix.os}}
+      #     files: dist/
+      #     tag_name: ${{matrix.os}}
+      #     fail_on_unmatched_files: true
+
+        
+          
