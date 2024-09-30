@@ -13,7 +13,7 @@ jobs:
         #   - { os: windows-2019, shell: "msys2 {0}" }
         #   - { os: ubuntu-20.04, shell: bash }
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.8"]
+        python-version: ["3.9"]
         #, "3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
         # numpy-version: []
         exclude:
@@ -33,7 +33,9 @@ jobs:
           path-type: inherit
           install: |
             mingw-w64-x86_64-gcc-fortran
-            hdf5
+            mingw-w64-hdf5
+      
+
 
       - name: Install GFortran, GCC Linux
         if: contains(matrix.os, 'ubuntu')
@@ -41,6 +43,10 @@ jobs:
           # sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install -y gcc gfortran libhdf5-serial-dev
+      
+      # - name: Install system dependencies (windows)
+      #   if: contains(matrix.os, 'windows-latest')
+      #   run: mingw64-pkg install hdf5
 
       # - name: Build and test wheels
       #   uses: pypa/cibuildwheel@latest
@@ -50,11 +56,9 @@ jobs:
       - name: build
         # if: contains(matrix.os, 'ubuntu')
         run: |
-          # python -m venv build
-          # source build/bin/activate
+          pip install build
           pip install .
           cd src/pyraingen/fortrain_daily
-          pip install build
           f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           python -m build
           
