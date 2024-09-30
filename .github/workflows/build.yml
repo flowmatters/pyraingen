@@ -51,8 +51,8 @@ jobs:
       - name: build
         # if: contains(matrix.os, 'ubuntu')
         run: |
-          python -m venv build
-          source build/bin/activate
+          # python -m venv build
+          # source build/bin/activate
           pip install .
           cd src/pyraingen/fortrain_daily
           pip install build
