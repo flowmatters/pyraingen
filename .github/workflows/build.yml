@@ -58,7 +58,7 @@ jobs:
         run: |
           pip install build
           pip install .
-          cd src/pyraingen/fortrain_daily
+          cd src/pyraingen/fortran_daily
           f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           python -m build
           
