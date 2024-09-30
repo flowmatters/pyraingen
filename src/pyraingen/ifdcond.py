@@ -27,8 +27,10 @@ import random
 import scipy.optimize
 import warnings
 import matplotlib.pyplot as plt
-warnings.simplefilter('ignore', np.RankWarning)
-
+if int(np.version.version.split('.')[0]) == 2:
+    warnings.simplefilter('ignore', np.exceptions.RankWarning)
+else:
+    warnings.simplefilter('ignore', np.RankWarning)
 ## Defined Functions
 from .readsynthrainnetcdf import readSynthRainNetCDF
 from .datevectojd import datevecToJD
