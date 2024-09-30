@@ -13,8 +13,7 @@ jobs:
         #   - { os: windows-2019, shell: "msys2 {0}" }
         #   - { os: ubuntu-20.04, shell: bash }
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.9"]
-        #, "3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
         # numpy-version: []
         exclude:
           - os: ubuntu-latest
@@ -26,6 +25,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
+      
       - name: Install mingw-w64 on Windows
         if: ${{ runner.os == 'Windows' }}
         uses: msys2/setup-msys2@v2
@@ -35,8 +35,6 @@ jobs:
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-hdf5
       
-
-
       - name: Install GFortran, GCC Linux
         if: contains(matrix.os, 'ubuntu')
         run: |
@@ -44,15 +42,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc gfortran libhdf5-serial-dev
       
-      # - name: Install system dependencies (windows)
-      #   if: contains(matrix.os, 'windows-latest')
-      #   run: mingw64-pkg install hdf5
-
-      # - name: Build and test wheels
-      #   uses: pypa/cibuildwheel@latest
-      #   env:
-      #     CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform }}
-    
       - name: build
         # if: contains(matrix.os, 'ubuntu')
         run: |
@@ -66,21 +55,5 @@ jobs:
       - name: Upload distributions
         uses: actions/upload-artifact@v4
         with:
-          name: release-dists
+          name: release-x86_64-${{matrix.os}}-${{matrix.python-version}}
           path: dist/
-    
-      # - name: build windows
-      #  if: contains(matrix.os, 'windows')
-      #   run: |
-      #     python -m venv build
-      #     source build/bin/activate
-      #     pip install .
-      #     cd src/pyraingen/fortrain_daily
-      #     python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for --fcompiler=gnu95 --compiler=mingw32
-
-
-      # - name: Store artifacts
-      #   uses: actions/upload-artifact@latest
-      #   with:
-      #     path: wheelhouse/*.whl
-      
