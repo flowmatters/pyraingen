@@ -39,6 +39,7 @@ jobs:
           install: |
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-hdf5
+            git
       
       - name: Install GFortran, GCC Linux
         if: contains(matrix.os, 'ubuntu')
@@ -47,20 +48,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc gfortran libhdf5-serial-dev
       
-      - name: build
+      - name: build fortran
         run: |
           pip install build numpy==${{matrix.numpy-version}}
           pip install .
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           cd ../../..
+      
+      - name: add fort libs linux
+        if: contains(matrix.os, 'ubuntu')
+        run: git add src/pyraingen/fortran_daily/regionalised_dailyT*.so -f
+      
+      - name: add fort libs windows
+        if: contains(matrix.os, 'windows')
+        run: git add src/pyraingen/fortran_daily/regionalised_dailyT*.dll -f
+      
+      - name: finish build
+        run: |
           python -m build
-          git add src/pyraingen/fortran_daily/regionalised_dailyT*.so -f
-          git add src/pyraingen/fortran_daily/regionalised_dailyT*.dll -f
+          ls
       
       - name: test install
         run: |
-          pip install dist/*.whl --force-reinstall
+          pip install ./dist/*.whl --force-reinstall
           python -c "from pyraingen.regionaliseddailysim import regionaliseddailysim"
 
       - name: Upload distributions
