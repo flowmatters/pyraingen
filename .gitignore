@@ -145,3 +145,5 @@ dmypy.json
 #Pip wheels
 *.whl
 wheelhouse
+
+.vscode
