@@ -14,15 +14,22 @@ jobs:
         #   - { os: ubuntu-20.04, shell: bash }
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.9"]
-        #["3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
+        #["3.8", "3.9", "3.10", "3.11", "3.12"]
+        #, "pypy3.9", "pypy3.10"]
         numpy-version: ['2.0']
         #["1.23", '1.24', '1.25', '1.26', '2.0']
         exclude:
           - os: ubuntu-latest
             python-version: "3.8"
           - os: ubuntu-latest
+            python-version: "pypy3.9"
+          - os: ubuntu-latest
+            python-version: "pypy3.10"
+          - os: ubuntu-latest
             numpy-version: "1.24"
             python-version: "3.12"
+          - numpy-version: "2.0"
+            python-version: '3.8'
     steps:
       - uses: actions/checkout@v4
       
@@ -48,26 +55,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc gfortran libhdf5-serial-dev
       
-      - name: build fortran
-        run: |
-          pip install build numpy==${{matrix.numpy-version}}
-          pip install .
-          cd src/pyraingen/fortran_daily
-          python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
-          cd ../../..
+      # - name: add fort libs linux
+      #   if: contains(matrix.os, 'ubuntu')
+      #   run: git add src/pyraingen/fortran_daily/regionalised_dailyT*.so -f
       
-      - name: add fort libs linux
-        if: contains(matrix.os, 'ubuntu')
-        run: git add src/pyraingen/fortran_daily/regionalised_dailyT*.so -f
-      
-      - name: add fort libs windows
-        if: contains(matrix.os, 'windows')
-        run: git add src/pyraingen/fortran_daily/regionalised_dailyT*.dll -f
+      # - name: add fort libs windows
+      #   if: contains(matrix.os, 'windows')
+      #   run: git add src/pyraingen/fortran_daily/regionalised_dailyT*.dll -f
       
       - name: finish build
         run: |
+          pip install build
           python -m build
-          ls
+          # ls
       
       - name: test install
         run: |
