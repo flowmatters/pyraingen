@@ -46,7 +46,7 @@ jobs:
           install: |
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-hdf5
-            git
+            # git
       
       - name: Install GFortran, GCC Linux
         if: contains(matrix.os, 'ubuntu')
@@ -54,32 +54,32 @@ jobs:
           # sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install -y gcc gfortran libhdf5-serial-dev
-          
-      - name: build fortran
+
+      - name: find fort loc
         if: contains(matrix.os, 'windows')
         run: |
-          pip install build numpy==${{matrix.numpy-version}}
-          pip install .
+          pip install numpy==${{matrix.numpy-version}}
+          # pip install .
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
-          cd ../../..
+          # cd ../../..
           tree
 
-      - name: finish build
-        run: |
-          pip install build
-          python -m build
+      # - name: finish build
+      #   run: |
+      #     pip install build
+      #     python -m build
       
-      - name: test install
-        run: |
-          pip install ./dist/*.whl --force-reinstall
-          python -c "from pyraingen.regionaliseddailysim import regionaliseddailysim"
+      # - name: test install
+      #   run: |
+      #     pip install ./dist/*.whl --force-reinstall
+      #     python -c "from pyraingen.regionaliseddailysim import regionaliseddailysim"
 
-      - name: Upload distributions
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}
-          path: dist/
+      # - name: Upload distributions
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}
+      #     path: dist/
 
       # - name: Release
       #   uses: softprops/action-gh-release@v1
