@@ -46,8 +46,7 @@ jobs:
           install: |
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-hdf5
-            # git
-      
+                  
       - name: Install GFortran, GCC Linux
         if: contains(matrix.os, 'ubuntu')
         run: |
