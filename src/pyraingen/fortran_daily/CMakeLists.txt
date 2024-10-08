@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17.2...3.29)
-project(${SKBUILD_PROJECT_NAME} LANGUAGES Fortran)
+project(${SKBUILD_PROJECT_NAME})
 # if(MSVC)
 #   target_compile_options(${TARGET_NAME} /W4 /WX)
 # else()
