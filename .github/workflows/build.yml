@@ -29,6 +29,8 @@ jobs:
             python-version: '3.8'
           - numpy-version: '1.26'
             python-version: '3.8'
+          - python-version: '3.12'
+            numpy-version: ['1.25', '1.23', '1.24']
     steps:
       - uses: actions/checkout@v4
       
@@ -36,7 +38,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
-          
+
       - name: Install mingw-w64 on Windows
         if: ${{ runner.os == 'Windows' }}
         uses: msys2/setup-msys2@v2
@@ -74,10 +76,13 @@ jobs:
       #     # cd ../../..
       #     tree
 
+      - name: install numpy
+        run: |
+          pip install numpy==${{matrix.numpy-version}}
+          
       - name: build fortran
         run: |
           cat .gitignore_extra >> .gitignore
-          pip install numpy==${{matrix.numpy-version}}
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           ls
