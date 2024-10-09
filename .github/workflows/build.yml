@@ -83,7 +83,7 @@ jobs:
           ls
           
       - name: move files for numpy 2.0
-        if: contains(matrix.numpy-version, '2.0)
+        if: contains(matrix.numpy-version, '2.0')
         run: |
           cd src/pyraingen/fortran_daily
           mv regionalised_dailyT/.libs/* .
