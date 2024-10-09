@@ -88,7 +88,7 @@ jobs:
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           mv regionalised_dailyT/.libs/* .
-          rm -rf regionalised_dailyT
+          rm -r regionalised_dailyT
           cd ../../..
           pip install build
           python -m build
