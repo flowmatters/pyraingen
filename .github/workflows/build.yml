@@ -57,7 +57,7 @@ jobs:
           install: |
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-hdf5
-            # mingw-w64-x86_64-ninja
+        # mingw-w64-x86_64-ninja
       
       # - name: unignore libraries windows
       #   if: contains(matrix.os, 'windows')
