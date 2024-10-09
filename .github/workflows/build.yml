@@ -47,15 +47,14 @@ jobs:
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-hdf5
       
-      - name: unignore libraries windows
-        if: contains(matrix.os, 'windows')
-        run: |
-          type .gitignore_extra >> .gitignore
+      # - name: unignore libraries windows
+      #   if: contains(matrix.os, 'windows')
+      #   run: |
+      #     type .gitignore_extra >> .gitignore
       
-      - name: unignore libraries linux
-        if: contains(matrix.os, 'ubuntu')
-        run: |
-          cat .gitignore_extra >> .gitignore
+      # - name: unignore libraries linux
+      #   if: contains(matrix.os, 'ubuntu')
+      #   run: |
 
       
 
@@ -78,6 +77,11 @@ jobs:
 
       - name: finish build
         run: |
+          cat .gitignore_extra >> .gitignore
+          pip install numpy==${{matrix.numpy-version}}
+          cd src/pyraingen/fortran_daily
+          python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
+          cd ../../..
           pip install build
           python -m build
       
