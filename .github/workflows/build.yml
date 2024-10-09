@@ -13,9 +13,11 @@ jobs:
         #   - { os: windows-2019, shell: "msys2 {0}" }
         #   - { os: ubuntu-20.04, shell: bash }
         os: [windows-latest, ubuntu-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9"]
+        #, "3.8", "3.10", "3.11", "3.12"]
         #, "pypy3.9", "pypy3.10"]
-        numpy-version: ["1.23", '1.24', '1.25', '1.26', '2.0']
+        numpy-version: ['2.0']
+          #["1.23", '1.24', '1.25', '1.26']
         exclude:
           - os: ubuntu-latest
             python-version: "3.8"
@@ -44,6 +46,18 @@ jobs:
           install: |
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-hdf5
+      
+      - name: unignore libraries windows
+        if: contains(matrix.os, 'windows')
+        run: |
+          type .gitignore_extra >> .gitignore
+      
+      - name: unignore libraries linux
+        if: contains(matrix.os, 'ubuntu')
+        run: |
+          cat .gitignore_extra >> .gitignore
+
+      
 
       - name: Install GFortran, GCC Linux
         if: contains(matrix.os, 'ubuntu')

@@ -1,0 +1,4 @@
+
+#A hacky fix to make sure that these are included in the wheel
+!regionalised_dailyT*
+!*regional*
