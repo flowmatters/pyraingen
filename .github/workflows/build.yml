@@ -14,10 +14,13 @@ jobs:
         #   - { os: ubuntu-20.04, shell: bash }
         os: [windows-latest]
         #, ubuntu-latest]
-        python-version: ["3.9", "3.8", "3.10", "3.11", "3.12"]
+        python-version: ['3.11']
+        #["3.9", "3.8", "3.10", "3.11", "3.12"]
         #, "pypy3.9", "pypy3.10"]
-        numpy-version: ['2.0', "1.23", '1.24', '1.25', '1.26']
+        numpy-version: ['2.0']
+        #, "1.23", '1.24', '1.25', '1.26']
         exclude:
+          - os: ubuntu-latest
           - os: ubuntu-latest
             python-version: "3.8"
           - os: ubuntu-latest
@@ -84,6 +87,8 @@ jobs:
           pip install numpy==${{matrix.numpy-version}}
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
+          mv regionalised_dailyT/.libs/* .
+          rm -rf regionalised_dailyT
           cd ../../..
           pip install build
           python -m build
