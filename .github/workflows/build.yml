@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        python-version: ['3.8', "3.9", "3.8", "3.10", "3.11", "3.12"]
+        python-version: ['3.8', "3.9", "3.10", "3.11", "3.12"]
         numpy-version: ['2.0', "1.23", '1.24', '1.25', '1.26']
         exclude:
           - os: ubuntu-latest
@@ -74,15 +74,23 @@ jobs:
       #     # cd ../../..
       #     tree
 
-      - name: finish build
+      - name: build fortran
         run: |
           cat .gitignore_extra >> .gitignore
           pip install numpy==${{matrix.numpy-version}}
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
+          ls
+          
+      - name: move files for numpy 2.0
+        if: contains(matrix.numpy-version, '2.0)
+        run: |
+          cd src/pyraingen/fortran_daily
           mv regionalised_dailyT/.libs/* .
           rm -r regionalised_dailyT
-          cd ../../..
+
+      - name: finish build
+        run: |
           pip install build
           python -m build
       
