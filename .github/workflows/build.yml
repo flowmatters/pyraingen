@@ -89,6 +89,8 @@ jobs:
         run: |
           cat .gitignore_extra >> .gitignore
           cd src/pyraingen/fortran_daily
+          $PWD
+          ls
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           ls
           
