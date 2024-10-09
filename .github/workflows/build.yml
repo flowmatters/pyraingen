@@ -12,12 +12,11 @@ jobs:
         # sys:
         #   - { os: windows-2019, shell: "msys2 {0}" }
         #   - { os: ubuntu-20.04, shell: bash }
-        os: [windows-latest, ubuntu-latest]
-        python-version: ["3.9"]
-        #, "3.8", "3.10", "3.11", "3.12"]
+        os: [windows-latest]
+        #, ubuntu-latest]
+        python-version: ["3.9", "3.8", "3.10", "3.11", "3.12"]
         #, "pypy3.9", "pypy3.10"]
-        numpy-version: ['2.0']
-          #["1.23", '1.24', '1.25', '1.26']
+        numpy-version: ['2.0', "1.23", '1.24', '1.25', '1.26']
         exclude:
           - os: ubuntu-latest
             python-version: "3.8"

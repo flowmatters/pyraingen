@@ -25,9 +25,11 @@ add_custom_command(
 
 if (WIN32)
   # set(generated_module_file ${CMAKE_CURRENT_BINARY_DIR}/libregional.HM4X2VRITDPUZ22SXJ2CC7VFRHQR5TXG.gfortran-win_amd64.dll)
-  FILE(GLOB generated_module_file *.dll)
+  FILE(GLOB generated_module_file *.pyd)
+  FILE(GLOB generated_dll regionalised_dailyT/.libs/*.dll)
+  install(FILES ${generated_dll} DESTINATION pyraingen/fortran_daily/regionalised_dailyT/.libs)
 elseif(APPLE)
-  message(WARNING "osx is unsupported")
+  message(ERROR "osx is unsupported")
 else()
   # set(generated_module_file ${CMAKE_CURRENT_BINARY_DIR}/${f2py_module_name}.cpython-${Python_VERSION_MAJOR}${Python_VERSION_MINOR}-x86_64-linux-gnu.so)
   FILE(GLOB generated_module_file *.so)
