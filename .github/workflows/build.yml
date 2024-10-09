@@ -35,6 +35,8 @@ jobs:
             numpy-version: '1.24'
           - python-version: '3.12'
             numpy-version: '1.26'
+          - python-version: '3.12'
+            numpy-version: '1.23'
 
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +91,7 @@ jobs:
         run: |
           cat .gitignore_extra >> .gitignore
           cd src/pyraingen/fortran_daily
-          $PWD
+          pwd
           ls
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           ls
