@@ -91,9 +91,9 @@ jobs:
         run: |
           cat .gitignore_extra >> .gitignore
           cd src/pyraingen/fortran_daily
-          pwd
+          echo $PWD
           ls
-          python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
+          python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD --backend meson
           ls
           
       - name: move files for numpy 2.0
