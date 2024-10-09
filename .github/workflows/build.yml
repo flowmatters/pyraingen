@@ -38,6 +38,8 @@ jobs:
             numpy-version: '1.26'
           - python-version: '3.12'
             numpy-version: '1.23'
+          - os: windows-latest
+            python-version: '3.12'
 
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +57,7 @@ jobs:
           install: |
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-hdf5
-            mingw-w64-x86_64-ninja
+            # mingw-w64-x86_64-ninja
       
       # - name: unignore libraries windows
       #   if: contains(matrix.os, 'windows')
@@ -95,7 +97,7 @@ jobs:
           cd src/pyraingen/fortran_daily
           echo $PWD
           ls
-          pip install meson
+          # pip install meson
           python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
           ls
           
@@ -121,14 +123,19 @@ jobs:
         with:
           name: release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}
           path: dist/
-
-      # - name: Release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     name: ${{matrix.os}}
-      #     files: dist/
-      #     tag_name: ${{matrix.os}}
-      #     fail_on_unmatched_files: true
+      
+      - name: Compress build
+        run: |
+          cd dist
+          Compress-Archive . ../release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}.zip
+      
+      - name: Release Nightly
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{matrix.os}}-Release
+          files: release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}.zip
+          fail_on_unmatched_files: true
+          tag_name: Release-${{matrix.os}}
 
         
           
