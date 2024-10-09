@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+*.dll
 
 # Distribution / packaging
 .Python
@@ -140,3 +141,9 @@ dmypy.json
 
 # MacOS
 .DS_Store
+
+#Pip wheels
+*.whl
+wheelhouse
+
+.vscode

@@ -1,25 +1,39 @@
-[tool.poetry]
+[project]
 name = "pyraingen"
 version = "0.2.3"
 description = "A package for stochastically generating daily and subdaily rainfall in Australia with ifd constraining."
-authors = ["Caleb Dykman"]
-license = "None"
-readme = "README.md"
+authors = [
+    {name="Caleb Dykman"}
+    ]
+license = {text = "None"}
+readme = {file = "README.md", content-type = "markdown"}
+modules = "pyraingen"
+requires-python = ">= 3.8"
+dependencies = [
+    "numpy>=1.23.5",
+    "matplotlib>=3.6.2",
+    "numba>=0.56.4",
+    "netCDF4>=1.6.2",
+    "scipy>=1.9.3"
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8"
-numpy = ">=1.23.5"
-matplotlib = ">=3.6.2"
-numba = ">=0.56.4"
-netCDF4 = ">=1.6.2"
-scipy = ">=1.9.3"
+# [tool.poetry.dev-dependencies]
+# myst-nb = {version = "^0.17.1", python = "^3.8"}
+# sphinx-autoapi = "^2.0.0"
+# sphinx-rtd-theme = "^1.1.1"
+# jupyter = "^1.0.0"
 
-[tool.poetry.dev-dependencies]
-myst-nb = {version = "^0.17.1", python = "^3.8"}
-sphinx-autoapi = "^2.0.0"
-sphinx-rtd-theme = "^1.1.1"
-jupyter = "^1.0.0"
+# [build-system]
+# # requires = ["poetry-core>=1.0.0"]
+# # build-backend = "poetry.core.masonry.api"
+# build-backend = 'mesonpy'
+# requires = ['meson-python']
+
+
+[tool.scikit-build]
+ninja.version = ">=1.10"
+cmake.version = ">=3.17.2"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["scikit-build-core", "numpy"]
+build-backend = "scikit_build_core.build"

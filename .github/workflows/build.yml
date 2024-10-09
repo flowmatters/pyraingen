@@ -1,0 +1,141 @@
+name: Build
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        python-version: ['3.8', "3.9", "3.10", "3.11", "3.12"]
+        numpy-version: ['2.0']
+        #, "1.23", '1.24', '1.25', '1.26']
+        exclude:
+          - os: ubuntu-latest
+          - os: ubuntu-latest
+            python-version: "3.8"
+          - os: ubuntu-latest
+            python-version: "pypy3.9"
+          - os: ubuntu-latest
+            python-version: "pypy3.10"
+          - os: ubuntu-latest
+            numpy-version: "1.24"
+            python-version: "3.12"
+          - numpy-version: "2.0"
+            python-version: '3.8'
+          - numpy-version: '1.25'
+            python-version: '3.8'
+          - numpy-version: '1.26'
+            python-version: '3.8'
+          - python-version: '3.12'
+            numpy-version: '1.25'
+          - python-version: '3.12'
+            numpy-version: '1.24'
+          - python-version: '3.12'
+            numpy-version: '1.26'
+          - python-version: '3.12'
+            numpy-version: '1.23'
+          - os: windows-latest
+            python-version: '3.12'
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+
+      - name: Install mingw-w64 on Windows
+        if: ${{ runner.os == 'Windows' }}
+        uses: msys2/setup-msys2@v2
+        with:
+          path-type: inherit
+          install: |
+            mingw-w64-x86_64-gcc-fortran
+            mingw-w64-x86_64-hdf5
+        # mingw-w64-x86_64-ninja
+      
+      # - name: unignore libraries windows
+      #   if: contains(matrix.os, 'windows')
+      #   run: |
+      #     type .gitignore_extra >> .gitignore
+      
+      # - name: unignore libraries linux
+      #   if: contains(matrix.os, 'ubuntu')
+      #   run: |
+
+      
+
+      # - name: Install GFortran, GCC Linux
+      #   if: contains(matrix.os, 'ubuntu')
+      #   run: |
+      #     # sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      #     sudo apt-get update
+      #     sudo apt-get install -y gcc gfortran libhdf5-serial-dev
+
+      # - name: find fort loc
+      #   if: contains(matrix.os, 'windows')
+      #   run: |
+      #     pip install numpy==${{matrix.numpy-version}}
+      #     # pip install .
+      #     cd src/pyraingen/fortran_daily
+      #     python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
+      #     # cd ../../..
+      #     tree
+
+      - name: install numpy
+        run: |
+          pip install numpy==${{matrix.numpy-version}}
+          
+      - name: build fortran
+        run: |
+          cat .gitignore_extra >> .gitignore
+          cd src/pyraingen/fortran_daily
+          echo $PWD
+          ls
+          # pip install meson
+          python -m numpy.f2py -m regionalised_dailyT -c regionalised_dailyT.for -I $PWD
+          ls
+          
+      - name: move files for numpy 2.0
+        if: contains(matrix.numpy-version, '2.0')
+        run: |
+          cd src/pyraingen/fortran_daily
+          mv regionalised_dailyT/.libs/* .
+          rm -r regionalised_dailyT
+
+      - name: finish build
+        run: |
+          pip install build
+          python -m build
+      
+      # - name: test install
+      #   run: |
+      #     pip install ./dist/*.whl --force-reinstall
+      #     python -c "from pyraingen.regionaliseddailysim import regionaliseddailysim"
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}
+          path: dist/
+      
+      - name: Compress build
+        run: |
+          cd dist
+          Compress-Archive . ../release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}.zip
+      
+      - name: Release Nightly
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{matrix.os}}-Release
+          files: release-x86_64-${{matrix.os}}-python-${{matrix.python-version}}-numpy-${{matrix.numpy-version}}.zip
+          fail_on_unmatched_files: true
+          tag_name: Release-${{matrix.os}}
+
+        
+          
