@@ -14,6 +14,8 @@ jobs:
         exclude:
           - python-version-minor: 9
             numpy-version: 2.2
+          - python-version-minor: 9
+            numpy-version: 2.1
           - python-version-minor: 12
             numpy-version: 1.25
           - numpy-version: 2.0
@@ -74,7 +76,7 @@ jobs:
       - name: finish build on 3.8 < python < 3.12
         if: ${{ matrix.python-version-minor <= 11 && matrix.python-version-minor != 8}}
         run: |
-          pip install numpy==${{matrix.numpy-version}} build==1.2.2.post1 ninja meson
+          pip install numpy==${{matrix.numpy-version}} build==1.2.2.post1 ninja meson delvewheel
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -c regionalised_dailyT4.for -m regionalised_dailyT4 -I $PWD --fcompiler=gfortran --compiler=msvc --backend distutils
           cd ../../..
@@ -110,11 +112,11 @@ jobs:
           python -m build
           pip list
 
-      - name: Upload distributions
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-x86_64-windows-latest-python-3.${{matrix.python-version-minor}}
-          path: dist/
+      # - name: Upload distributions
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: release-x86_64-windows-latest-python-3.${{matrix.python-version-minor}}
+      #     path: dist/
 
       - name: Release
         uses: softprops/action-gh-release@v1
