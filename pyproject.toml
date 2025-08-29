@@ -1,9 +1,9 @@
-[project]
+[tool.poetry]
 name = "pyraingen"
 version = "1.0.2"
 description = "A package for stochastically generating daily and subdaily rainfall in Australia with ifd constraining."
 authors = [
-    {name = "Caleb Dykman"}
+    "Caleb Dykman"
 ]
 license = "None"
 readme = "README.md"
