@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version-minor: [9, 10, 11, 12, 13] 
-        numpy-version: [2.2]
+        numpy-version: [2.1, 2.2]
         exclude:
           - python-version-minor: 9
             numpy-version: 2.2
@@ -45,15 +45,27 @@ jobs:
         with:
           install: mingw-w64-x86_64-hdf5
      
-      - name: Set up Python > 3.8
-        if: ${{ matrix.python-version-minor != 8}} 
+      - name: Set up Python > 3.11
+        if: ${{ matrix.python-version-minor > 11}} 
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           python-version: 3.${{ matrix.python-version-minor }}
       
-      - name: Install dependencies for python > 3.8
-        if: ${{ matrix.python-version-minor != 8}}
+      - name: setup 3.8 < python < 3.12
+        if: ${{matrix.python-version-minor != 8 && matrix.python-version-minor <= 11}}
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.${{matrix.python-version-minor}}
+
+      - name: Install mingw-w64 on Windows for python < 3.12
+        if: ${{ matrix.python-version-minor <= 11}}
+        uses: msys2/setup-msys2@v2
+        with:
+          install: mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-toolchain base-devel
+
+      - name: Install dependencies for python > 3.11
+        if: ${{ matrix.python-version-minor > 11}}
         run: |
           conda config --add channels conda-forge
           pip install numpy==${{matrix.numpy-version}} build==1.2.2.post1
