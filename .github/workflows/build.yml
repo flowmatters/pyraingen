@@ -52,12 +52,25 @@ jobs:
           auto-update-conda: true
           python-version: 3.${{ matrix.python-version-minor }}
       
-      - name: finish build on >3.8
+      - name: Install dependencies for python > 3.8
         if: ${{ matrix.python-version-minor != 8}}
         run: |
           conda config --add channels conda-forge
           pip install numpy==${{matrix.numpy-version}} build==1.2.2.post1
           conda install -y meson gcc gfortran delvewheel
+
+      - name: finish build on 3.8 < python < 3.12
+        if: ${{ matrix.python-version-minor <= 11 && matrix.python-version-minor != 8}}
+        run: |
+          pip install numpy==${{matrix.numpy-version}} build==1.2.2.post1 ninja meson
+          cd src/pyraingen/fortran_daily
+          python -m numpy.f2py -c regionalised_dailyT4.for -m regionalised_dailyT4 -I $PWD --fcompiler=gfortran --compiler=msvc --backend distutils
+          cd ../../..
+          python -m build --wheel .
+
+      - name: finish build on >3.11
+        if: ${{ matrix.python-version-minor > 11}}
+        run: |
           cd src\pyraingen\fortran_daily
           $env:FC = "gfortran"
           $env:CC = "gcc"
@@ -67,6 +80,10 @@ jobs:
           ls dist
           cp dist\pyraingen-1.0.2-py3-none-any.whl dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
           ls dist
+    
+      - name: repair wheel on > 3.8
+        if: ${{ matrix.python-version-minor != 8}}
+        run: |
           delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/
           
       - name: finish build on python 3.8
