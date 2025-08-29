@@ -10,16 +10,16 @@ jobs:
       fail-fast: false
       matrix:
         python-version-minor: [9, 10, 11, 12, 13] 
-        numpy-version: [2.1]
+        numpy-version: [2.2]
         exclude:
           - python-version-minor: 9
-            numpy-version: 2.1 
+            numpy-version: 2.2
           - python-version-minor: 12
             numpy-version: 1.25
           - numpy-version: 2.0
         include:
-          - python-version-minor: 8
-            numpy-version: 1.23.5
+          # - python-version-minor: 8
+          #   numpy-version: 1.23.5
           - numpy-version: 2.0
             python-version-minor: 9
     steps:
@@ -57,7 +57,7 @@ jobs:
         run: |
           conda config --add channels conda-forge
           pip install numpy==${{matrix.numpy-version}} build
-          conda install -y meson gfortran delvewheel
+          conda install -y meson gcc gfortran delvewheel
           cd src\pyraingen\fortran_daily
           python -m numpy.f2py -m regionalised_dailyT4 -c regionalised_dailyT4.for -I $PWD
           cd ../../..
