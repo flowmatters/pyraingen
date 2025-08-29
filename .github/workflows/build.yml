@@ -55,6 +55,7 @@ jobs:
       - name: finish build on 3.8
         if: ${{ matrix.python-version-minor != 8}}
         run: |
+          conda config --add channels conda-forge
           pip install numpy==${{matrix.numpy-version}} build
           conda install -y meson gfortran delvewheel
           cd src\pyraingen\fortran_daily
