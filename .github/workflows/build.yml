@@ -56,7 +56,7 @@ jobs:
         if: ${{ matrix.python-version-minor != 8}}
         run: |
           conda config --add channels conda-forge
-          pip install numpy==${{matrix.numpy-version}} build=1.2.2.post1
+          pip install numpy==${{matrix.numpy-version}} build==1.2.2.post1
           conda install -y meson gcc gfortran delvewheel
           cd src\pyraingen\fortran_daily
           $env:FC = "gfortran"
