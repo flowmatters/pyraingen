@@ -56,9 +56,11 @@ jobs:
         if: ${{ matrix.python-version-minor != 8}}
         run: |
           conda config --add channels conda-forge
-          pip install numpy==${{matrix.numpy-version}} build
+          pip install numpy==${{matrix.numpy-version}} build=1.2.2.post1
           conda install -y meson gcc gfortran delvewheel
           cd src\pyraingen\fortran_daily
+          $env:FC = "gfortran"
+          $env:CC = "gcc"
           python -m numpy.f2py -m regionalised_dailyT4 -c regionalised_dailyT4.for -I $PWD
           cd ../../..
           python -m build --wheel .
