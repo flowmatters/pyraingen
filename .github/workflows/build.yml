@@ -81,7 +81,7 @@ jobs:
           python -m numpy.f2py -c regionalised_dailyT4.for -m regionalised_dailyT4 -I $PWD --fcompiler=gfortran --compiler=msvc --backend distutils
           cd ../../..
           python -m build --wheel .
-
+          
       - name: finish build on >3.11
         if: ${{ matrix.python-version-minor > 11}}
         run: |
@@ -92,12 +92,6 @@ jobs:
           cd ../../..
           python -m build --wheel .
           
-      - name: repair wheel on > 3.8
-        if: ${{ matrix.python-version-minor != 8}}
-        run: |
-          cp dist\pyraingen-1.0.2-py3-none-any.whl dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
-          delvewheel repair --ignore-existing dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/
-        
       - name: finish build on python 3.8
         if: ${{ matrix.python-version-minor == 8}}
         run: |
@@ -109,6 +103,15 @@ jobs:
           cd ../../..
           python -m build
           pip list
+
+      - name: Fix Wheel filename
+        run: |
+          mv dist\pyraingen-1.0.2-py3-none-any.whl dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
+
+      - name: repair wheel on > 3.11
+        if: ${{ matrix.python-version-minor > 11}}
+        run: |
+          delvewheel repair --ignore-existing dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/
 
       - name: Release
         uses: softprops/action-gh-release@v1
