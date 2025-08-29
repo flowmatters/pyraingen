@@ -2,7 +2,9 @@
 name = "pyraingen"
 version = "1.0.2"
 description = "A package for stochastically generating daily and subdaily rainfall in Australia with ifd constraining."
-authors = ["Caleb Dykman"]
+authors = [
+    {name = "Caleb Dykman"}
+]
 license = "None"
 readme = "README.md"
 
@@ -14,8 +16,8 @@ numba = ">=0.56.4"
 netCDF4 = ">=1.6.2"
 scipy = ">=1.9.3"
 joblib = ">=1.4.2"
-pandas = "1.5.3"
-xarray = "2023.01.0"
+pandas = ">=1.5.3"
+xarray = ">=2023.01.0"
 
 [tool.poetry.dev-dependencies]
 myst-nb = {version = "0.17.1", python = "3.8.5"}
@@ -24,5 +26,5 @@ sphinx-rtd-theme = "1.1.1"
 jupyter = "1.0.0"
 
 [build-system]
-requires = ["poetry-core=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
