@@ -79,6 +79,7 @@ jobs:
           pip install numpy==${{matrix.numpy-version}} build==1.2.2.post1 ninja meson delvewheel
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -c regionalised_dailyT4.for -m regionalised_dailyT4 -I $PWD --fcompiler=gfortran --compiler=msvc --backend distutils
+          Get-ChildItem -Force -R
           cd ../../..
           python -m build --wheel .
           
@@ -108,10 +109,9 @@ jobs:
         run: |
           mv dist\pyraingen-1.0.2-py3-none-any.whl dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
 
-      - name: repair wheel on > 3.11
-        if: ${{ matrix.python-version-minor > 11}}
+      - name: repair wheel to add dlls
         run: |
-          delvewheel repair --ignore-existing dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/
+          delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/ --add-path $PWD\src\pyraingen\fortran_daily
 
       - name: Release
         uses: softprops/action-gh-release@v1
