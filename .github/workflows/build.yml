@@ -97,7 +97,7 @@ jobs:
         if: ${{ matrix.python-version-minor == 8}}
         run: |
           cat .gitignore_extra >> .gitignore
-          pip install numpy==${{matrix.numpy-version}} ninja meson setuptools==59.8.0 build # wheel
+          pip install numpy==${{matrix.numpy-version}} ninja meson setuptools==59.8.0 build delvewheel # wheel
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -c regionalised_dailyT4.for -m regionalised_dailyT4 --fcompiler=gnu95 --compiler=mingw32
           Get-ChildItem -Force -R
@@ -110,8 +110,14 @@ jobs:
           mv dist\pyraingen-1.0.2-py3-none-any.whl dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
 
       - name: repair wheel to add dlls
+        if: ${{ matrix.python-version-minor == 8 || matrix.python-version-minor > 11}}
         run: |
-          delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/ --add-path $PWD\src\pyraingen\fortran_daily
+          delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/
+        
+      - name: repair wheel to add dlls for python 3.9, 3.10, 3.11
+        if: ${{ matrix.python-version-minor != 8 && matrix.python-version-minor <= 11}}
+        run: |
+          delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/ --add-path $PWD\src\pyraingen\fortran_daily\.libs
 
       - name: Release
         uses: softprops/action-gh-release@v1
