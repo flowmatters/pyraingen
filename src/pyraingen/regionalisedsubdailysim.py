@@ -35,6 +35,7 @@ import random
 from datetime import date
 from numba.core import types
 from numba.typed import Dict
+from importlib import resources
 
 # Defined Functions
 from .loadsubdailystationmeta import loadSubDailyStationMeta
@@ -47,8 +48,8 @@ from .producesubdailynetcdf import produceSubDailyNetCDF
 from .global_ import nSeasons
 from .global_ import ndaysYearLeap
 
-def regionalisedsubdailysim(fnameInput, pathSubDaily, pathIndex, 
-                            pathCoeff, targetIndex, pathReference=' ', 
+def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex, 
+                            pathIndex=None, pathCoeff=None, pathReference=' ', 
                             fnameSubDaily='subdaily.nc',
                             minYears=10, nYearsPool=500, dryWetCutoff=0.30,
                             halfWinLen=15, maxNearNeighb=10, nSims=10,
@@ -56,13 +57,13 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathIndex,
                             absDiffTol=0.1, gso3_lat=None, gso3_lon=None,
                             gso3_elev=None, gso3_distcoast=None, 
                             gso3_anrf=None, gso3_temp=None):
-    """Front end to the regionalised sub-daily
-    disaggregation code.
+    """Front end to the regionalised sub-daily disaggregation code.
 
     Options (genSeqOption) included:\n
     0. Only sub daily data is available. 
         - Daily data is formed from the subdaily record and is used for disaggregation.\n
-    1. Daily and sub-daily rainfall data at target station is available \n(daily record comes from other source and therefore may be of different length to sub-daily record).
+    1. Daily and sub-daily rainfall data at target station is available \n
+        - daily record comes from other source and therefore may be of different length to sub-daily record.\n
         - using sub-daily record at target station to disaggregate the daily record at the target station.\n
     2. Only daily rainfall at target station is available
         - using nearby locations sub-daily information disaggregate daily rainfall at target location.\n
@@ -73,10 +74,10 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathIndex,
     4. Multiple simulated sequences of daily rainfall at the target station are available. 
         - sub daily rainfall sequences are generated using sub-daily information at the target station.\n
     
-    Step 1: Pre-Compute the Pool - Mix of Step 1 and 2 in Westra et al
-    2012 "Continuous rainfall simulation 1: A regionalised subdaily
-    disaggregation approach". This depends on the user's input of 
-    genSeqOption. Different sequences are generated for each season, because if 
+    Step 1: Pre-Compute the Pool - Mix of Step 1 and 2 in Westra et al 2012 
+    "Continuous rainfall simulation 1: A regionalised subdaily disaggregation approach". 
+    This depends on the user's input of genSeqOption. 
+    Different sequences are generated for each season, because if 
     genSeqOption = 3 then there may be different stations per
     season.  However, if the target data is known (genSeqOption <= 2)
     then it is the same data set for each season.  Finally, if if there is 
@@ -88,14 +89,14 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathIndex,
     the method of fragments is only concerned with one parameter that can be computed up
     front:
     
-      1) the day of the year the rain fell, e.g. November 23rd, and not which
-    year and the where is already handled with the "nearby" stations".
+    1) the day of the year the rain fell, e.g. November 23rd, and not which
+        year and the where is already handled with the "nearby" stations".
     
     The second logical must be computed sliding through the target daily
     series:
 
-      2) a logical if the wet states for the previous and next day are the
-    same as from the target daily sequence.
+    2) a logical if the wet states for the previous and next day are the
+        same as from the target daily sequence.
     
     The general process is then to loop over the seasons and then each station
     within that season. From there we compute the sequences.
@@ -114,6 +115,7 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathIndex,
     Step 2 b) Dissagregation Loop
 
     Save Data
+    
 
     Parameters
     ----------
@@ -283,6 +285,15 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathIndex,
     param_path['pathSubDaily'] = pathSubDaily
     # Path to the observed single location daily data, for genSeqOption<=2
     param_path['pathReference'] = pathReference
+    
+    # Get Data
+    if pathIndex == None:
+        with resources.path("pyraingen.data", "index.nc") as f:
+            pathIndex = str(f)
+    if pathCoeff == None:
+        with resources.path("pyraingen.data", "coefficients.dat") as f:
+            pathCoeff = str(f)    
+    
     # Path to index data
     param_path['pathIndex'] = pathIndex
     # Path to Coefficients
@@ -489,17 +500,32 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, pathIndex,
 
     ## Step 2 b) Dissagregation Loop
     print('Step 2 b) Performing subdaily disaggregation')
-    from .subdailysimloop0 import subDailySimLoop0
-    from .subdailysimloop1 import subDailySimLoop1
-
+    # from .subdailysimloop0 import subDailySimLoop0
+    # from .subdailysimloop1 import subDailySimLoop1
+    from joblib import Parallel, delayed
+    from .subdailydisaggregation import subDailyDisaggregation
 
     if param['genSeqOption'] >=0 and param['genSeqOption'] < 3:
-        results = subDailySimLoop0(int(param['nSims']), targetDailyRain, param, nGoodDays, 
-                            fragments, fragmentsState, fragmentsDailyDepth) 
-    elif param['genSeqOption'] >=3 and param['genSeqOption'] <= 4:
-        results = subDailySimLoop1(int(param['nSims']), nDailySims, targetDailyRain, param,
-                            nGoodDays, fragments, fragmentsState, 
-                            fragmentsDailyDepth)
+        results = Parallel(n_jobs=-1, prefer="threads")(delayed(subDailyDisaggregation)(
+                                                targetDailyRain, 
+                                                param,nGoodDays, 
+                                                fragments, 
+                                                fragmentsState, 
+                                                fragmentsDailyDepth) for i in range(int(param['nSims']))) 
+    elif param['genSeqOption'] == 3 or param['genSeqOption'] == 4:
+        if param['nSims'] > nDailySims:
+            # This is to handle recycling if the user has asked for 100 simulations, 
+            # say, but the source only has 50.
+            diff = param['nSims'] - nDailySims
+            nSims = [*range(int(nDailySims))] + random.choices(range(int(nDailySims)), k=diff)
+        else:
+            nSims = range(int(param['nSims']))
+        results = Parallel(n_jobs=-1, prefer="threads")(delayed(subDailyDisaggregation)(
+                                                targetDailyRain[:, int(i)].astype(np.float64), 
+                                                param, nGoodDays, 
+                                                fragments, 
+                                                fragmentsState, 
+                                                fragmentsDailyDepth) for i in nSims)
     else:
         print("Unsupported genSeqOption value. Must be >= 0 and <= 4")
 
