@@ -52,7 +52,7 @@ jobs:
           auto-update-conda: true
           python-version: 3.${{ matrix.python-version-minor }}
       
-      - name: finish build on 3.8
+      - name: finish build on >3.8
         if: ${{ matrix.python-version-minor != 8}}
         run: |
           conda config --add channels conda-forge
@@ -62,6 +62,8 @@ jobs:
           python -m numpy.f2py -m regionalised_dailyT4 -c regionalised_dailyT4.for -I $PWD
           cd ../../..
           python -m build --wheel .
+          ls dist
+          cp dist\pyraingen-1.0.2-py3-none-any.whl dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
           ls dist
           delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/
           
