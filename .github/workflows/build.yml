@@ -91,15 +91,13 @@ jobs:
           python -m numpy.f2py -m regionalised_dailyT4 -c regionalised_dailyT4.for -I $PWD
           cd ../../..
           python -m build --wheel .
-          ls dist
-          cp dist\pyraingen-1.0.2-py3-none-any.whl dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
-          ls dist
-    
+          
       - name: repair wheel on > 3.8
         if: ${{ matrix.python-version-minor != 8}}
         run: |
+          cp dist\pyraingen-1.0.2-py3-none-any.whl dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
           delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/
-          
+        
       - name: finish build on python 3.8
         if: ${{ matrix.python-version-minor == 8}}
         run: |
@@ -111,12 +109,6 @@ jobs:
           cd ../../..
           python -m build
           pip list
-
-      # - name: Upload distributions
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: release-x86_64-windows-latest-python-3.${{matrix.python-version-minor}}
-      #     path: dist/
 
       - name: Release
         uses: softprops/action-gh-release@v1
