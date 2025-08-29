@@ -117,7 +117,7 @@ jobs:
       - name: repair wheel to add dlls for python 3.9, 3.10, 3.11
         if: ${{ matrix.python-version-minor != 8 && matrix.python-version-minor <= 11}}
         run: |
-          delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/ --add-path $PWD\src\pyraingen\fortran_daily\.libs
+          delvewheel repair dist\pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl -w dist/ --add-path $PWD\src\pyraingen\fortran_daily\regionalised_dailyT4\.libs
 
       - name: Release
         uses: softprops/action-gh-release@v1
