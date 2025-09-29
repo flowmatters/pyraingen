@@ -97,7 +97,7 @@ jobs:
         if: ${{ matrix.python-version-minor == 8}}
         run: |
           cat .gitignore_extra >> .gitignore
-          pip install numpy==${{matrix.numpy-version}} ninja meson setuptools==59.8.0 build delvewheel # wheel
+          pip install numpy==${{matrix.numpy-version}} ninja meson==1.9.0 setuptools==59.8.0 build delvewheel # wheel
           cd src/pyraingen/fortran_daily
           python -m numpy.f2py -c regionalised_dailyT4.for -m regionalised_dailyT4 --fcompiler=gnu95 --compiler=mingw32
           Get-ChildItem -Force -R
