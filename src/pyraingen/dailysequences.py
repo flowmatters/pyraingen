@@ -89,6 +89,7 @@ def dailySequences(nSeasons,
                 fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'], 
                     int(stnDetails['stnIndex'][currStnIndex]))
                 )
+                print('Processing station:', fnameNC)
                 ds=nc.Dataset(fnameNC)
                 daySeries = ds['day'][:].data
                 dayVecStart = jdToDateVec(daySeries[0])

@@ -106,10 +106,10 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
                 dataIdxEnd = (date.toordinal(date(
                     int(dayVecEnd[0]),int(dayVecEnd[1]),int(dayVecEnd[2])))
                     - date.toordinal(date(yearStart,1,1))+1)
-
+                SUBDAILY_SCALE=0.1
                 tmpSubDaily = np.ones((nDaysKnown, recordsPerDay,)) * missingDay #dimensions flipped
-                tmpSubDaily[dataIdxStart:dataIdxEnd, :] = ds['rainfall'][:].data/10 #
-                
+                tmpSubDaily[dataIdxStart:dataIdxEnd, :] = ds['rainfall'][:].data * SUBDAILY_SCALE
+
                 # This is the index into the days dimension of tmpSubDaily
                 idxDayLinear = 0
                 # Loop over each year in this station
@@ -118,19 +118,25 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
                     #for loopDay in range(nDaysCurrYear):
                     for loopDay in range(ndaysYearLeap):
                         # still need to handle a leap year...
-                        if (loopDay == idxfebTwentyNine and 
-                        nDaysCurrYear != ndaysYearLeap):    
+                        if (loopDay == idxfebTwentyNine and
+                        nDaysCurrYear != ndaysYearLeap):
                             continue
+                        daily_bad = dailyWetState[loopSeason][loopDay,idxYear] == stateBad
+                        day_is_wet = dailyDepth[loopSeason][loopDay,idxYear] > param['dryWetCutoff']
+                        the_fragment = tmpSubDaily[idxDayLinear,:]
+                        subdaily_missing = (np.min(the_fragment) < 0)
+                        if subdaily_missing and day_is_wet and not daily_bad:
+                            num_missing = np.sum(the_fragment < 0)
+                            print(f'{fnameNC}: Missing sub-daily data found for year {loopYear}, day {loopDay}: {num_missing} timesteps')
+
                         # But otherwise work through:
-                        if (dailyWetState[loopSeason][loopDay,idxYear] != stateBad and 
-                        dailyDepth[loopSeason][loopDay,idxYear] > param['dryWetCutoff']):
-                            
+                        if day_is_wet and not subdaily_missing and not daily_bad:
                             fragments[loopSeason][loopDay,int(fragmentCounter[loopDay]),:] = \
-                                tmpSubDaily[idxDayLinear,:]
-                            
+                                the_fragment
+
                             fragmentsState[loopSeason][loopDay,int(fragmentCounter[loopDay])]= \
                                 dailyWetState[loopSeason][loopDay, idxYear]
-                            
+
                             fragmentsDailyDepth[loopSeason][loopDay,int(fragmentCounter[loopDay])]= \
                                 dailyDepth[loopSeason][loopDay,idxYear]
 
