@@ -5,7 +5,7 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build_wheels:
     name: Build wheels on windows python 3.${{ matrix.python-version-minor }} np ${{ matrix.numpy-version }}
-    runs-on: windows-latest
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
