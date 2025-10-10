@@ -20,8 +20,8 @@ jobs:
             numpy-version: 1.25
           - numpy-version: 2.0
         include:
-          # - python-version-minor: 8
-          #   numpy-version: 1.23.5
+           - python-version-minor: 8
+             numpy-version: 1.23.5
           - numpy-version: 2.0
             python-version-minor: 9
     steps:
@@ -123,6 +123,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: windows-latest
-          files: ./dist/pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
+          files: ./wheelhouse/pyraingen-1.0.2-cp3${{matrix.python-version-minor}}-cp3${{matrix.python-version-minor}}-win_amd64.whl
           tag_name: windows-latest
           fail_on_unmatched_files: true
