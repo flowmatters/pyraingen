@@ -39,9 +39,8 @@ def datevecToJD(dateVector):
 
     # Check necessary for the USNO algorithm
     if dateVector.year < 1801 or dateVector.year > 2099:
-        raise ValueError('DTJD:YearRange'
-        'Out of year range, this algorithm is restricted to the '
-        'range: 1801 <= year <= 2099')
+        raise ValueError(f'DTJD:YearRange: year={dateVector.year} is out of range, '
+        'this algorithm is restricted to 1801 <= year <= 2099')
     
     year   = dateVector.year #dateVector[0]
     month  = dateVector.month #dateVector[1]
