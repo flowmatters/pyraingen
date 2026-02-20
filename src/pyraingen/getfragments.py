@@ -141,16 +141,14 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
                                 dailyDepth[loopSeason][loopDay,idxYear]
 
                             # Sanity Check:
-                            if (abs(np.sum((
-                                fragments[loopSeason][loopDay,int(fragmentCounter[loopDay]),:]))
-                                - dailyDepth[loopSeason][loopDay,idxYear]) > 1):
-                                
+                            sum_check = np.sum(fragments[loopSeason][loopDay,int(fragmentCounter[loopDay]),:])
+                            if (abs(sum_check - dailyDepth[loopSeason][loopDay,idxYear]) > 1):
                                 plt.plot((
                                 fragments[loopSeason][loopDay,int(fragmentCounter[loopDay]),:]
                                 ))
-                                raise ValueError('Sum fail')
+                                raise ValueError(f'Sum fail for year {loopYear}, day {loopDay}. sum_check: {sum_check}, dailyDepth: {dailyDepth[loopSeason][loopDay,idxYear]}')
                             fragmentCounter[loopDay] += 1
                         idxDayLinear += 1
                     idxYear += 1
-    
+
     return fragments, fragmentsState, fragmentsDailyDepth
