@@ -229,7 +229,7 @@ def regionaliseddailysim(nyears, startyear, nsim,
     # Bias Correct and/or Scale Rainfall
     daily_rain = xr.open_dataset(output_path_nc)
     daily_rain['day'] = pd.to_datetime(daily_rain['day'], unit='D', origin='julian')
-    smanrf = daily_rain['rainfall'].resample(day="A").sum().mean()
+    smanrf = daily_rain['rainfall'].resample(day="YE").sum().mean()
     daily_rain.close()
     del daily_rain
     daily_rain_bc = xr.open_dataset(output_path_nc)    
