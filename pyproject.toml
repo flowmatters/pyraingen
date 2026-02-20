@@ -16,7 +16,7 @@ numba = ">=0.56.4"
 netCDF4 = ">=1.6.2"
 scipy = ">=1.9.3"
 joblib = ">=1.4.2"
-pandas = ">=1.5.3"
+pandas = ">=2.2.0"
 xarray = ">=2023.01.0"
 
 [tool.poetry.dev-dependencies]
