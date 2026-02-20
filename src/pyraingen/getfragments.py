@@ -31,7 +31,7 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
         A "good day" is one that is not of state bad and has
         a depth greater than the dryWetCutoff.
     dailyDepth : list
-        A list of arrays (one for each season) containing the daily depth sequences. 
+        A list of arrays (one for each season) containing the daily depth sequences.
     dailyWetState : list
         A list of arrays (one for each season) containing the daily wetState sequences.
     stnDetails : dict where keys are words and values are float
@@ -46,14 +46,14 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
         are possible different correlations between stations over
         different seasons.
     param : dict where keys are words and values are float
-        Dictionary of the run parameters. 
+        Dictionary of the run parameters.
     param_path : dict where keys are words and values are str
-        Dictionary of the necessary paths.\n  
+        Dictionary of the necessary paths.\n
 
     Returns
     ----------
     fragments : list
-        A list of arrays (one for each season) containing a count  
+        A list of arrays (one for each season) containing a count
         of the number of good fragments available for sampling.
     fragmentsState : list
         A list of arrays (one for each season) containing the daily wetState sequences
@@ -62,7 +62,7 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
         A list of arrays (one for each season) containing the daily depth sequences
         of the good fragments available for sampling.
     """
-    
+
     # Allocate RAM
     fragments = List()
     fragmentsState = List()
@@ -87,7 +87,7 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
                 # There are no more stations for this season
                 break
             else:
-                fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'], 
+                fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'],
                     int(stnDetails['stnIndex'][currStnIndex])))
                 ds=nc.Dataset(fnameNC)
                 daySeries = ds['day'][:].data
