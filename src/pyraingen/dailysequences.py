@@ -62,13 +62,14 @@ def dailySequences(nSeasons,
     workingRainDepth = np.zeros((3,1))
     for loopSeason in range(nSeasons):
         # Allocate RAM for this daily series:
+        nYears = int(nYearsPool[loopSeason].item())
         dailyDepth.append(np.ones(
             (ndaysYearLeap,
-            int(nYearsPool[loopSeason])))
+            nYears))
             *missingDay)
         dailyWetState.append(np.ones(
             (ndaysYearLeap,
-            int(nYearsPool[loopSeason])))
+            nYears))
             *stateBad)
         
         #Counter through the year dimension of our arrays
