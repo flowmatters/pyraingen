@@ -1,6 +1,5 @@
 # Packages & Libraries
 import numpy as np
-import netCDF4 as nc
 from datetime import date
 import matplotlib.pyplot as plt
 from numba.typed import List
@@ -18,7 +17,7 @@ from .global_ import idxfebTwentyNine
 from .global_ import recordsPerDay
 
 #@nvtx.annotate()
-def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nearStationIdx, param, param_path):
+def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nearStationIdx, param, param_path, station_cache=None):
     """Loops over the stations andload and store only the fragments whose
     wetstate != 0 (i.e. some possibly good data).
 
@@ -87,10 +86,16 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
                 # There are no more stations for this season
                 break
             else:
-                fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'],
-                    int(stnDetails['stnIndex'][currStnIndex])))
-                ds=nc.Dataset(fnameNC)
-                daySeries = ds['day'][:].data
+                stnIdx = int(stnDetails['stnIndex'][currStnIndex])
+                if station_cache is not None:
+                    daySeries, rainfall_data = station_cache.get(stnIdx)
+                    fnameNC = station_cache.filename(stnIdx)
+                else:
+                    import netCDF4 as nc
+                    fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'], stnIdx))
+                    ds=nc.Dataset(fnameNC)
+                    daySeries = ds['day'][:].data
+                    rainfall_data = ds['rainfall'][:].data
                 dayVecStart = jdToDateVec(daySeries[0])
                 dayVecEnd = jdToDateVec(daySeries[-1])
                 yearStart = int(dayVecStart[0])
@@ -108,7 +113,10 @@ def getFragments(nSeasons, nGoodDays, dailyWetState, dailyDepth, stnDetails, nea
                     - date.toordinal(date(yearStart,1,1))+1)
                 SUBDAILY_SCALE=0.1
                 tmpSubDaily = np.ones((nDaysKnown, recordsPerDay,)) * missingDay #dimensions flipped
-                tmpSubDaily[dataIdxStart:dataIdxEnd, :] = ds['rainfall'][:].data * SUBDAILY_SCALE
+                if station_cache is not None:
+                    tmpSubDaily[dataIdxStart:dataIdxEnd, :] = rainfall_data * SUBDAILY_SCALE
+                else:
+                    tmpSubDaily[dataIdxStart:dataIdxEnd, :] = ds['rainfall'][:].data * SUBDAILY_SCALE
 
                 # This is the index into the days dimension of tmpSubDaily
                 idxDayLinear = 0

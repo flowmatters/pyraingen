@@ -388,9 +388,14 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
     # Step a) loop over the stations and compute the number of years in the
     # pool:
 
+    # Pre-load station data to avoid repeated file reads across steps 1a-1d
+    from .stationcache import StationCache
+    station_cache = StationCache(param_path['pathSubDaily'], stnDetails['stnIndex'])
+
     print('Step 1(a) looping over stations and computing number of years')
     from .numberofyears import numberOfYears
-    nYearsPool = numberOfYears(nSeasons, stnDetails, nearStationIdx, param_path)
+    nYearsPool = numberOfYears(nSeasons, stnDetails, nearStationIdx, param_path,
+                               station_cache=station_cache)
 
     # Step b) compute the daily sequences.
     # Now as we know the number of years in the seasonal pool we can allocate
@@ -405,8 +410,9 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
 
     print('Step 1(b) Compute daily sequences')
     from .dailysequences import dailySequences
-    dailyDepth, dailyWetState = dailySequences(nSeasons, nYearsPool, stnDetails, 
-                                            nearStationIdx, param, param_path)
+    dailyDepth, dailyWetState = dailySequences(nSeasons, nYearsPool, stnDetails,
+                                            nearStationIdx, param, param_path,
+                                            station_cache=station_cache)
 
     # Step c) work out the maximum number of good days per year per day per season.
     # For this computation a "good day" is one that is not of state bad and has
@@ -422,11 +428,13 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
 
     print('Step 1(d) load and store only possibly good fragments')
     from .getfragments import getFragments
-    fragments, fragmentsState, fragmentsDailyDepth = getFragments(nSeasons, 
-                                                        nGoodDays, dailyWetState, 
-                                                        dailyDepth,stnDetails, 
-                                                        nearStationIdx, param, 
-                                                        param_path)
+    fragments, fragmentsState, fragmentsDailyDepth = getFragments(nSeasons,
+                                                        nGoodDays, dailyWetState,
+                                                        dailyDepth,stnDetails,
+                                                        nearStationIdx, param,
+                                                        param_path,
+                                                        station_cache=station_cache)
+    del station_cache
     del dailyDepth, dailyWetState
 
     # Step 2 a) If Required Load Daily Reference Data

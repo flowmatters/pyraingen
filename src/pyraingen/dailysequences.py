@@ -1,6 +1,5 @@
 # Packages & Libraries
 import numpy as np
-import netCDF4 as nc
 from datetime import date
 from numba.typed import List
 #import nvtx
@@ -18,12 +17,13 @@ from .global_ import idxfebTwentyNine
 from .global_ import yesterday, today, tomorrow
 
 #@nvtx.annotate()
-def dailySequences(nSeasons, 
-                    nYearsPool,  
-                    stnDetails, 
-                    nearStationIdx, 
-                    param, 
-                    param_path):
+def dailySequences(nSeasons,
+                    nYearsPool,
+                    stnDetails,
+                    nearStationIdx,
+                    param,
+                    param_path,
+                    station_cache=None):
     """Computes the daily sequences.
     Loop through the number of years in the seasonal
     pool and load the daily sequences.
@@ -87,17 +87,22 @@ def dailySequences(nSeasons,
                 # number of years in the sequence.  We also want to reshape our
                 # linear vector of rainfall data from the NetCDF into the
                 # year-on-year array herein.
-                fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'], 
-                    int(stnDetails['stnIndex'][currStnIndex]))
-                )
+                stnIdx = int(stnDetails['stnIndex'][currStnIndex])
+                if station_cache is not None:
+                    daySeries, rainfall_data = station_cache.get(stnIdx)
+                    fnameNC = station_cache.filename(stnIdx)
+                else:
+                    import netCDF4 as nc
+                    fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'], stnIdx))
+                    ds=nc.Dataset(fnameNC)
+                    daySeries = ds['day'][:].data
+                    rainfall_data = ds['rainfall'][:].data
                 print('Processing station:', fnameNC)
-                ds=nc.Dataset(fnameNC)
-                daySeries = ds['day'][:].data
                 dayVecStart = jdToDateVec(daySeries[0])
                 dayVecEnd = jdToDateVec(daySeries[-1])
                 yearStart = int(dayVecStart[0])
                 yearEnd = int(dayVecEnd[0])
-                tmpSubDaily = ds['rainfall'][:].data/10
+                tmpSubDaily = rainfall_data/10
                 # The algorithm below works on the assumption that the
                 # tmpSubDaily array is populated with full years.  So pad out
                 # the data array to make full years with missingDay values.

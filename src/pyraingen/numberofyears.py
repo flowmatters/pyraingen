@@ -1,12 +1,11 @@
 import numpy as np
-import netCDF4 as nc
 #import nvtx
 
 # Defined Functions
 from .jdtodatevec import jdToDateVec
 
 #@nvtx.annotate()
-def numberOfYears(nSeasons, stnDetails, nearStationIdx, param_path):
+def numberOfYears(nSeasons, stnDetails, nearStationIdx, param_path, station_cache=None):
     """Computes the number of years in each seasonal pool.
 
     Parameters
@@ -41,13 +40,17 @@ def numberOfYears(nSeasons, stnDetails, nearStationIdx, param_path):
             if currStnIndex == 0:
                 # There are no more stations for this season
                 break
-            else: 
+            else:
                 # Get the start and end years from the NetCDF then compute the
                 # number of years in the sequence.
-                fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'], 
-                    int(stnDetails['stnIndex'][currStnIndex])))
-                ds=nc.Dataset(fnameNC)
-                daySeries = ds['day'][:].data
+                stnIdx = int(stnDetails['stnIndex'][currStnIndex])
+                if station_cache is not None:
+                    daySeries = station_cache.get(stnIdx)[0]
+                else:
+                    import netCDF4 as nc
+                    fnameNC = ('{}/plv{:06}.nc'.format(param_path['pathSubDaily'], stnIdx))
+                    ds=nc.Dataset(fnameNC)
+                    daySeries = ds['day'][:].data
                 dayVecStart = jdToDateVec(daySeries[0])
                 dayVecEnd = jdToDateVec(daySeries[-1])
                 nYearsPool[loopSeason] += (dayVecEnd[0] 
