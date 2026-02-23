@@ -3,12 +3,16 @@ import pandas as pd
 import xarray as xr
 import os
 import copy
+import time
+import logging
 from importlib import resources
 
 from .fortran_daily import regionalised_dailyT4
 from .get_fortran_data import copy_fortran_data
 from .convert_daily_to_NetCDF import convertdailync
 from .getnearbystations import station
+
+logger = logging.getLogger(__name__)
 
 def regionaliseddailysim(nyears, startyear, nsim,
                             targetidx, targetlat, targetlon, 
@@ -127,8 +131,10 @@ def regionaliseddailysim(nyears, startyear, nsim,
     anrf   = str(targetanrf) + ' '
     temp   = str(targettemp) + ' '
 
+    t_start = time.monotonic()
     copy_fortran_data()
-    
+    t_copy_data = time.monotonic()
+
     # Write paramters into data_r file
     with open("data_r.dat",'r') as file:
         data_r = file.readlines()
@@ -174,16 +180,20 @@ def regionaliseddailysim(nyears, startyear, nsim,
         target['temp']            = targettemp    
         
         print("\nFinding nearby stations...\n")
+        t_find_stations_start = time.monotonic()
         station(param, target, nAttributes=33,
             fout=f'nearby_station_details.out'
         )
+        t_find_stations_end = time.monotonic()
     
     # Check if file exists
     # if os.path.exists("drop.out"):
         # os.remove("drop.out")
     
     # Begin simulation
+    t_fortran_start = time.monotonic()
     regionalised_dailyT4.regionalised_daily(idrop=0)
+    t_fortran_end = time.monotonic()
     
     # idrop = 0
     # kk = 0
@@ -221,18 +231,32 @@ def regionaliseddailysim(nyears, startyear, nsim,
             # break
     
     
+    t_convert_start = time.monotonic()
     convertdailync(f"mmm_{targetidx}.out", output_path_nc, startyear, nyears, nsim, missingDay=-999.9)
     #remove textfile
     if os.path.exists(f"mmm_{targetidx}.out"):
         os.remove(f"mmm_{targetidx}.out")
-    
+    t_convert_end = time.monotonic()
+
     # Bias Correct and/or Scale Rainfall
+    t_bias_start = time.monotonic()
     daily_rain = xr.open_dataset(output_path_nc)
     daily_rain['day'] = pd.to_datetime(daily_rain['day'], unit='D', origin='julian')
     smanrf = daily_rain['rainfall'].resample(day="YE").sum().mean()
     daily_rain.close()
     del daily_rain
-    daily_rain_bc = xr.open_dataset(output_path_nc)    
+    daily_rain_bc = xr.open_dataset(output_path_nc)
     daily_rain_bc['rainfall'] *= (targetanrf * rm)/smanrf
     daily_rain_bc.close()
     daily_rain_bc.to_netcdf(output_path_nc)
+    t_end = time.monotonic()
+
+    logger.info("regionaliseddailysim timing: "
+                "copy_data=%.1fs, find_stations=%.1fs, fortran=%.1fs, "
+                "convert=%.1fs, bias_correct=%.1fs, total=%.1fs",
+                t_copy_data - t_start,
+                t_find_stations_end - t_find_stations_start if getstations else 0,
+                t_fortran_end - t_fortran_start,
+                t_convert_end - t_convert_start,
+                t_end - t_bias_start,
+                t_end - t_start)

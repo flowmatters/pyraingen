@@ -32,7 +32,11 @@
 # Packages & Libraries
 import numpy as np
 import random
+import time
+import logging
 from datetime import date
+
+logger = logging.getLogger(__name__)
 from numba.core import types
 from numba.typed import Dict
 from importlib import resources
@@ -389,13 +393,16 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
     # pool:
 
     # Pre-load station data to avoid repeated file reads across steps 1a-1d
+    t_sub_start = time.monotonic()
     from .stationcache import StationCache
     station_cache = StationCache(param_path['pathSubDaily'], stnDetails['stnIndex'])
 
+    t_step1a = time.monotonic()
     print('Step 1(a) looping over stations and computing number of years')
     from .numberofyears import numberOfYears
     nYearsPool = numberOfYears(nSeasons, stnDetails, nearStationIdx, param_path,
                                station_cache=station_cache)
+    t_step1b = time.monotonic()
 
     # Step b) compute the daily sequences.
     # Now as we know the number of years in the seasonal pool we can allocate
@@ -413,6 +420,7 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
     dailyDepth, dailyWetState = dailySequences(nSeasons, nYearsPool, stnDetails,
                                             nearStationIdx, param, param_path,
                                             station_cache=station_cache)
+    t_step1c = time.monotonic()
 
     # Step c) work out the maximum number of good days per year per day per season.
     # For this computation a "good day" is one that is not of state bad and has
@@ -421,6 +429,7 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
     print('Step 1(c) Compute maximum number of good days per year day per season')
     from .maxgooddays import maxGoodDays
     nGoodDays = maxGoodDays(nSeasons, nYearsPool, dailyWetState, dailyDepth, param)
+    t_step1d = time.monotonic()
 
     # Step d) with our daily sequences load and store only the fragments whose
     # wetstate != 0 (i.e. some possibly good data).  This does involve looping
@@ -435,6 +444,14 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
                                                         param_path,
                                                         station_cache=station_cache)
     del station_cache
+    t_step1_end = time.monotonic()
+    logger.info("step1 breakdown: cache_init=%.1fs, 1a_numYears=%.1fs, "
+                "1b_dailySeq=%.1fs, 1c_maxGoodDays=%.1fs, 1d_fragments=%.1fs",
+                t_step1a - t_sub_start,
+                t_step1b - t_step1a,
+                t_step1c - t_step1b,
+                t_step1d - t_step1c,
+                t_step1_end - t_step1d)
     del dailyDepth, dailyWetState
 
     # Step 2 a) If Required Load Daily Reference Data
@@ -506,6 +523,8 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
     param['DayStart'] = DayStart
     param['DayEnd'] = DayEnd
 
+    t_step2a_end = time.monotonic()
+
     ## Step 2 b) Dissagregation Loop
     print('Step 2 b) Performing subdaily disaggregation')
     # from .subdailysimloop0 import subDailySimLoop0
@@ -542,7 +561,19 @@ def regionalisedsubdailysim(fnameInput, pathSubDaily, targetIndex,
     else:
         subdailySims = results
 
+    t_step2b_end = time.monotonic()
+
     print('Saving data')
     jdStart = datevecToJD(date(int(simYearStart), 1, 1))
     simJDSeries  = np.arange(0,np.size(subdailySims, axis=1),1)+ jdStart
     produceSubDailyNetCDF(param_path['fnameSubDaily'],subdailySims ,simJDSeries)
+    t_sub_end = time.monotonic()
+
+    logger.info("regionalisedsubdailysim timing: "
+                "step1_fragments=%.1fs, step2a_load_daily=%.1fs, "
+                "step2b_disaggregation=%.1fs, save=%.1fs, total=%.1fs",
+                t_step1_end - t_sub_start,
+                t_step2a_end - t_step1_end,
+                t_step2b_end - t_step2a_end,
+                t_sub_end - t_step2b_end,
+                t_sub_end - t_sub_start)
